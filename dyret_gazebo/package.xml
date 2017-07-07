@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>dyret_gazebo</name>
+  <version>0.1.0</version>
+  <description>Gazebo interface package for Dyret</description>
+
+  <maintainer email="jorgehn@ifi.uio.no">Jørgen Nordmoen</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>dyret_description</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>gazebo_ros_control</exec_depend>
+  <exec_depend>joint_state_controller</exec_depend>
+  <exec_depend>xacro</exec_depend>
+</package>

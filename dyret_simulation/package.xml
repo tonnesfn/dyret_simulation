@@ -1,0 +1,18 @@
+<package format="2">
+	<name>dyret_simulation</name>
+	<version>0.1.0</version>
+	<description>
+		Metapackage for dyret_simulation
+	</description>
+	<maintainer email="jorgehn@ifi.uio.no">Jørgen Nordmoen</maintainer>
+	<license>MIT</license>
+
+	<buildtool_depend>catkin</buildtool_depend>
+	<exec_depend>dyret_description</exec_depend>
+	<exec_depend>dyret_gazebo</exec_depend>
+	<exec_depend>dyret_sim_utils</exec_depend>
+
+	<export>
+		<metapackage />
+	</export>
+</package>

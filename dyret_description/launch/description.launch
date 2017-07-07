@@ -1,0 +1,13 @@
+<!-- This launch file parses the Dyret xacro placing it into the variable
+		 `robot_description` in URDF form	-->
+<launch>
+	<!-- Custom arguments for xacro model: -->
+	<arg name="imu_enabled" default="false" doc="Enable IMU unit in description" />
+	<arg name="contact_enabled" default="false" doc="Enable contact units in description" />
+
+	<!-- Parse xacro and place it in parameter accessible inside ROS -->
+	<param name="robot_description"
+		command="$(find xacro)/xacro --inorder '$(find dyret_description)/urdf/dyret.xacro'
+		imu_enabled:=$(arg imu_enabled)
+		contact_enabled:=$(arg contact_enabled)" />
+</launch>

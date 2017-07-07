@@ -1,0 +1,14 @@
+<!-- Spawn Dyret inside Gazebo, this expects Gazebo to already be running -->
+<launch>
+	<!-- Define arguments -->
+	<arg name="imu_enabled" default="false" />
+	<arg name="contact_enabled" default="false" />
+	<!-- Launch description which parses xacro -->
+	<include file="$(find dyret_description)/launch/description.launch">
+		<arg name="imu_enabled" value="$(arg imu_enabled)" />
+		<arg name="contact_enabled" value="$(arg contact_enabled)" />
+	</include>
+	<!-- Spawn the parsed URDF model of Dyret -->
+	<node name="spawn_dyret" pkg="gazebo_ros" type="spawn_model"
+		args="-urdf -model dyret -param robot_description -z 0.425" output="screen" />
+</launch>
