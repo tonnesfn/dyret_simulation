@@ -40,5 +40,21 @@
 			<child link="${name}_foot_sph" />
 			<origin xyz="0 0 ${-0.0355/2 + 0.00195}" />
 		</joint>
+
+		<xacro:if value="$(arg contact_enabled)">
+			<gazebo reference="${name}_foot_sph">
+				<sensor name="${name}_bumper" type="contact">
+					<contact>
+						<collision>${name}_ext2_outer_fixed_joint_lump__${name}_foot_sph_collision_2</collision>
+					</contact>
+					<plugin name="${name}_gazebo_ros_bumper_controller"
+						filename="libgazebo_ros_bumper.so">
+						<robotNamespace>/dyret</robotNamespace>
+						<bumperTopicName>${name}_contact</bumperTopicName>
+						<frameName>world</frameName>
+					</plugin>
+				</sensor>
+			</gazebo>
+		</xacro:if>
 	</xacro:macro>
 </robot>

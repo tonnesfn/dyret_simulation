@@ -32,10 +32,11 @@
 					<topic>imu</topic>
 					<plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
 						<bodyName>imu_link</bodyName>
-						<frameName>dyret_body</frameName>
+						<frameName>world</frameName>
 						<gaussianNoise>0.05</gaussianNoise>
+						<robotNamespace>/dyret</robotNamespace>
 						<rpyOffset>0 0 0</rpyOffset>
-						<topicName>dyret/imu</topicName>
+						<topicName>imu</topicName>
 						<updateRateHZ>100.0</updateRateHZ>
 						<xyzOffset>0 0 0</xyzOffset>
 					</plugin>

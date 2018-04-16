@@ -2,6 +2,7 @@
 <launch>
 	<arg name="world" default="worlds/empty.world" doc="Gazebo world file" />
 	<arg name="imu_enabled" default="true" />
+	<arg name="contact_enabled" default="false" />
 	<arg name="paused" default="false" doc="Start Gazebo paused" />
 	<arg name="gui" default="true" doc="Start GUI for Gazebo" />
 
@@ -15,5 +16,6 @@
 	<!-- Spawn Dyret within world -->
 	<include file="$(find dyret_gazebo)/launch/spawn_dyret.launch">
 		<arg name="imu_enabled" value="$(arg imu_enabled)" />
+		<arg name="contact_enabled" value="$(arg contact_enabled)" />
 	</include>
 </launch>

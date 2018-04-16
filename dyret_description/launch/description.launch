@@ -3,9 +3,10 @@
 	<!-- The IMU is always included as an element with weight, but Gazebo
 	     support can be toggled -->
 	<arg name="imu_enabled" default="true" doc="Enable IMU unit in Gazebo" />
+	<arg name="contact_enabled" default="false" doc="Enable Contact sensors in Gazebo" />
 
 	<!-- Parse xacro and place it in parameter accessible inside ROS -->
 	<param name="robot_description"
 		command="$(find xacro)/xacro --inorder '$(find dyret_description)/urdf/dyret.xacro'
-		imu_enabled:=$(arg imu_enabled)" />
+		imu_enabled:=$(arg imu_enabled) contact_enabled:=$(arg contact_enabled)" />
 </launch>
