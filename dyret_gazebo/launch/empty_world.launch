@@ -1,11 +1,9 @@
 <!-- Launch an empty Gazebo world and spawn Dyret -->
 <launch>
 	<arg name="world" default="worlds/empty.world" doc="Gazebo world file" />
-	<arg name="imu_enabled" default="false" />
-	<arg name="contact_enabled" default="false" />
+	<arg name="imu_enabled" default="true" />
 	<arg name="paused" default="false" doc="Start Gazebo paused" />
 	<arg name="gui" default="true" doc="Start GUI for Gazebo" />
-	<arg name="enable_control" default="true" doc="Start Gazebo joint controls" />
 
 	<!-- Start Gazebo -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -17,20 +15,5 @@
 	<!-- Spawn Dyret within world -->
 	<include file="$(find dyret_gazebo)/launch/spawn_dyret.launch">
 		<arg name="imu_enabled" value="$(arg imu_enabled)" />
-		<arg name="contact_enabled" value="$(arg contact_enabled)" />
 	</include>
-	<!-- Create controller that publishes joint states -->
-	<rosparam command="load"
-		file="$(find dyret_gazebo)/config/dyret_control.yaml" />
-	<node if="$(arg enable_control)"
-		name="dyret_controller_spawner" pkg="controller_manager" type="spawner"
-		args="joint_state_controller
-		front_right_coxa_controller front_left_coxa_controller
-		back_right_coxa_controller back_left_coxa_controller
-		front_right_femur_controller front_left_femur_controller
-		back_right_femur_controller back_left_femur_controller
-		front_right_tibia_controller front_left_tibia_controller
-		back_right_tibia_controller back_left_tibia_controller
-		--shutdown-timeout 3"
-		ns="dyret"/>
 </launch>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- Load description -->
+	<param name="robot_description"
+		command="$(find xacro)/xacro --inorder '$(find dyret_description)/urdf/dyret.xacro'" />
+
+	<!-- Send fake joint values -->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+		<param name="use_gui" value="true"/>
+	</node>
+
+	<!-- Combine joint values -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+
+	<!-- Launch rviz -->
+	<node name="rviz" pkg="rviz" type="rviz"
+		args="-d $(find dyret_description)/launch/dyret.rviz"
+		required="true"/>
+</launch>

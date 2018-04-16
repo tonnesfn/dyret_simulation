@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find dyret_description)/urdf/inertias.urdf.xacro" />
+
+	<xacro:property name="small_ext_width" value="0.0343" />
+	<xacro:property name="small_ext_depth" value="0.0081" />
+	<xacro:property name="small_ext_height" value="0.0555" />
+
+	<xacro:property name="small_ext2_width" value="0.0436" />
+	<xacro:property name="small_ext2_depth" value="0.0212" />
+	<xacro:property name="small_ext2_height" value="0.0792" />
+
+	<xacro:macro name="small_ext" params="name">
+		<link name="${name}">
+			<visual>
+				<origin xyz="0 0 ${small_ext_height/2}" />
+				<geometry>
+					<box size="${small_ext_width} ${small_ext_depth} ${small_ext_height}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 ${small_ext_height/2}" />
+				<geometry>
+					<box size="${small_ext_width} ${small_ext_depth} ${small_ext_height}" />
+				</geometry>
+			</collision>
+			<xacro:box_inertia mass="0.02" width="${small_ext_width}"
+				length="${small_ext_depth}" height="${small_ext_height}"
+				r="${pi/2}" />
+		</link>
+	</xacro:macro>
+
+	<xacro:macro name="small_ext2" params="name">
+		<link name="${name}">
+			<visual>
+				<origin xyz="0 0 ${-small_ext2_height/2}" />
+				<geometry>
+					<box size="${small_ext2_width} ${small_ext2_depth} ${small_ext2_height}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 ${-small_ext2_height/2}" />
+				<geometry>
+					<box size="${small_ext2_width} ${small_ext2_depth} ${small_ext2_height}" />
+				</geometry>
+			</collision>
+			<xacro:box_inertia_inv mass="0.04" width="${small_ext2_width}"
+				length="${small_ext2_depth}" height="${small_ext2_height}"
+				r="${pi/2}" />
+		</link>
+	</xacro:macro>
+
+	<xacro:macro name="small_extender" params="name">
+		<xacro:small_ext name="${name}_inner" />
+		<xacro:small_ext2 name="${name}_outer" />
+		<joint name="${name}" type="prismatic">
+			<parent link="${name}_inner" />
+			<child link="${name}_outer" />
+			<axis xyz="0 0 1" />
+			<origin xyz="0 0 ${small_ext_height - 0.026}" />
+			<limit
+				lower="-0.025" upper="0.0"
+				effort="100.0" velocity="0.00045" />
+		</joint>
+	</xacro:macro>
+</robot>

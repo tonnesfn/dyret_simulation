@@ -1,62 +1,46 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http:/ros.org/wiki/xacro">
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
 	<!-- Import complex parts for robot -->
-	<xacro:include filename="$(find dyret_description)/urdf/imu.urdf.xacro" />
+	<xacro:include filename="$(find dyret_description)/urdf/body.urdf.xacro" />
 	<xacro:include filename="$(find dyret_description)/urdf/leg.urdf.xacro" />
 
-	<!-- Leg to baseplate macro: -->
-	<xacro:macro name="base_leg" params="name rev frev">
-		<xacro:leg name="${name}" frev="${frev}"/>
-		<joint name="${name}_coxa_joint" type="revolute">
-			<origin xyz="${rev *(0.22 / 2 + 0.0208)} ${frev * (0.42 / 2 - 0.0058)} -0.0391"
-				rpy="0 1.57 0"/>
-			<parent link="baseplate" />
-			<child link="${name}_coxa" />
-			<dynamics damping="0.01" />
-			<limit effort="6.0" lower="-1.92" upper="1.92" velocity="2.57"/>
-			<axis xyz="0 1 0" />
-		</joint>
-		<transmission name="${name}_coxa_transmission">
-			<type>transmission_interface/SimpleTransmission</type>
-			<actuator name="${name}_coxa_motor">
-				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-				<mechanicalReduction>1</mechanicalReduction>
-			</actuator>
-			<joint name="${name}_coxa_joint">
-				<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-			</joint>
-		</transmission>
-	</xacro:macro>
-
-	<!-- Macro which builds the URDF -->
 	<xacro:macro name="dyret_robot">
-		<link name="baseplate">
-			<visual>
-				<geometry>
-					<mesh filename="package://dyret_description/meshes/base_assembly.STL" />
-				</geometry>
-			</visual>
-			<collision>
-				<geometry>
-					<box size="0.22 0.42 0.01" />
-				</geometry>
-			</collision>
-			<inertial>
-				<mass value="2.404" />
-				<inertia
-					ixx="0.035359" ixy="0.0" ixz="0.0"
-					iyy="0.009716" iyz="0.0"
-					izz="0.045035" />
-			</inertial>
-		</link>
-		<!-- Create four legs -->
-		<xacro:base_leg name="front_right" rev="1" frev="1" />
-		<xacro:base_leg name="front_left" rev="-1" frev="1" />
-		<xacro:base_leg name="back_right" rev="1" frev="-1" />
-		<xacro:base_leg name="back_left" rev="-1" frev="-1" />
-		<!-- Include IMU if desired -->
-		<xacro:if value="$(arg imu_enabled)">
-			<xacro:imu />
-		</xacro:if>
+		<xacro:body name="main_body" />
+
+		<xacro:leg name="fl" />
+		<joint name="fl_body_fixed" type="fixed">
+			<parent link="main_body_chassis" />
+			<child link="fl_joint1_servo" />
+			<origin xyz="${-body_width / 2 + mx64at_width/2 - 0.007}
+				${body_depth / 2 - mx64at_depth / 2 + 0.0065}
+				${-mx64at_height}" />
+		</joint>
+
+		<xacro:leg name="fr" />
+		<joint name="fr_body_fixed" type="fixed">
+			<parent link="main_body_chassis" />
+			<child link="fr_joint1_servo" />
+			<origin xyz="${body_width / 2 - mx64at_width/2 + 0.012}
+				${body_depth / 2 - mx64at_depth / 2 + 0.005}
+				${-mx64at_height}" />
+		</joint>
+
+		<xacro:leg name="bl" />
+		<joint name="bl_body_fixed" type="fixed">
+			<parent link="main_body_chassis" />
+			<child link="bl_joint1_servo" />
+			<origin xyz="${-body_width / 2 + mx64at_width/2 - 0.01}
+				${-body_depth / 2 + mx64at_depth / 2 - 0.0035}
+				${-mx64at_height}" />
+		</joint>
+
+		<xacro:leg name="br" />
+		<joint name="br_body_fixed" type="fixed">
+			<parent link="main_body_chassis" />
+			<child link="br_joint1_servo" />
+			<origin xyz="${body_width / 2 - mx64at_width/2 + 0.009}
+				${-body_depth / 2 + mx64at_depth / 2 - 0.005}
+				${-mx64at_height}" />
+		</joint>
 	</xacro:macro>
 </robot>

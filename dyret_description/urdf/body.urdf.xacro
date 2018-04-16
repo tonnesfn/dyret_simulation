@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find dyret_description)/urdf/imu.urdf.xacro" />
+	<xacro:include filename="$(find dyret_description)/urdf/inertias.urdf.xacro" />
+
+	<xacro:property name="body_width" value="0.259" />
+	<xacro:property name="body_depth" value="0.475" />
+	<xacro:property name="body_height" value="0.0135" />
+
+	<!-- Do not use these macros, see exported below -->
+	<xacro:macro name="chassis" params="name">
+		<link name="${name}">
+			<visual>
+				<origin rpy="${pi/2} 0 0"
+					xyz="0.001 0 ${body_height}" />
+				<geometry>
+					<mesh filename="package://dyret_description/meshes/BODY_SERVO.STL"
+						scale="0.001 0.001 0.001"/>
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 ${body_height/2}" />
+				<geometry>
+					<box size="${body_width} ${body_depth} ${body_height}" />
+				</geometry>
+			</collision>
+			<xacro:box_inertia mass="0.58" width="${body_width}"
+				length="${body_depth}" height="${body_height}"	/>
+		</link>
+	</xacro:macro>
+
+	<xacro:property name="ac_width" value="0.056" />
+	<xacro:property name="ac_depth" value="0.098" />
+	<xacro:property name="ac_height" value="0.015" />
+
+	<xacro:macro name="actuator_board" params="name">
+		<link name="${name}">
+			<visual>
+				<origin xyz="0 0 ${ac_height / 2}" />
+				<geometry>
+					<box size="${ac_width} ${ac_depth} ${ac_height}" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 ${ac_height/2}" />
+				<geometry>
+					<box size="${ac_width} ${ac_depth} ${ac_height}" />
+				</geometry>
+			</collision>
+			<xacro:box_inertia mass="0.28" width="${ac_width}"
+				length="${ac_depth}" height="${ac_height}"	/>
+		</link>
+	</xacro:macro>
+
+	<!-- Exported macros: -->
+	<xacro:macro name="body" params="name">
+		<xacro:chassis name="${name}_chassis" />
+		<xacro:actuator_board name="${name}_board" />
+		<xacro:imu />
+
+		<joint name="${name}_chassis_ac_joint" type="fixed">
+			<parent link="${name}_chassis" />
+			<child link="${name}_board" />
+			<origin xyz="0 0 ${-body_height}" />
+		</joint>
+		<joint name="${name}_chassis_imu_joint" type="fixed">
+			<parent link="${name}_chassis" />
+			<child link="imu_link" />
+			<origin xyz="0 0 ${body_height}" />
+		</joint>
+	</xacro:macro>
+</robot>

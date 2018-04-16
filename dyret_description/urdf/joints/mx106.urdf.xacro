@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find dyret_description)/urdf/inertias.urdf.xacro" />
+
+	<xacro:property name="mx106t_width" value="0.0460" />
+	<xacro:property name="mx106t_depth" value="0.0402" />
+	<xacro:property name="mx106t_height" value="0.0651" />
+
+	<!-- Helper macros see below for exported macros -->
+	<xacro:macro name="mx106t" params="name">
+		<link name="${name}">
+			<visual>
+				<origin rpy="${pi/2} 0 ${pi/2}"
+					xyz="${-mx106t_width/2 - 0.002} ${-mx106t_depth/2} ${-mx106t_height + 0.0145}" />
+				<geometry>
+					<mesh filename="package://dyret_description/meshes/MX-106T.STL"
+						scale="0.001 0.001 0.001" />
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 ${-mx106t_height/2 + 0.0145}" />
+				<geometry>
+					<box size="${mx106t_width} ${mx106t_depth} ${mx106t_height}" />
+				</geometry>
+			</collision>
+			<inertial>
+				<mass value="0.158" />
+				<origin xyz="-0.000142777 0 ${-mx106t_height/2 + 0.0145}"
+					rpy="${pi/2} 0 ${pi/2}" />
+				<inertia
+					ixx="0.000078694" ixy="0" ixz="0"
+					iyy="0.000040972" iyz="0"
+					izz="0.000061357" />
+			</inertial>
+		</link>
+	</xacro:macro>
+
+	<xacro:property name="fr08h101_width" value="0.056" />
+	<xacro:property name="fr08h101_depth" value="0.033" />
+	<xacro:property name="fr08h101_height" value="0.0408" />
+	<xacro:property name="fr08h101_offset" value="0.003" />
+
+	<xacro:macro name="fr08h101" params="name">
+		<link name="${name}">
+			<visual>
+				<origin rpy="${pi/2} 0 0"
+					xyz="${-fr08h101_width/2} ${fr08h101_depth/2} ${-fr08h101_offset}" />
+				<geometry>
+					<mesh filename="package://dyret_description/meshes/FR08-H101.STL"
+						scale="0.001 0.001 0.001"/>
+				</geometry>
+			</visual>
+
+			<collision>
+				<origin xyz="0 0 ${fr08h101_height/2 - fr08h101_offset}" />
+				<geometry>
+					<box size="${fr08h101_width} ${fr08h101_depth} ${fr08h101_height - fr08h101_offset}" />
+				</geometry>
+			</collision>
+
+			<xacro:box_inertia mass="0.018" width="${fr08h101_width}"
+				length="${fr08h101_depth}" height="${fr08h101_height}"	/>
+		</link>
+	</xacro:macro>
+
+
+	<xacro:macro name="mx106t_inv" params="name">
+		<link name="${name}">
+			<visual>
+				<origin rpy="${pi/2} ${pi} ${pi}"
+					xyz="${-mx106t_width/2 + 0.0049} ${-mx106t_depth/2 - 0.0049} ${mx106t_height}" />
+				<geometry>
+					<mesh filename="package://dyret_description/meshes/MX-106T.STL"
+						scale="0.001 0.001 0.001"/>
+				</geometry>
+			</visual>
+
+			<collision>
+				<origin rpy="0 ${pi} ${pi/2}"
+					xyz="0 0 ${mx106t_height/2}" />
+				<geometry>
+					<box size="${mx106t_width} ${mx106t_depth} ${mx106t_height}" />
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="0.158" />
+				<origin xyz="0 0 ${mx106t_height/2}"
+					rpy="${pi/2} 0 0" />
+				<inertia
+					ixx="0.000078694" ixy="0" ixz="0"
+					iyy="0.000040972" iyz="0"
+					izz="0.000061357" />
+			</inertial>
+		</link>
+	</xacro:macro>
+
+	<xacro:macro name="fr08h101_inv" params="name">
+		<link name="${name}">
+			<visual>
+				<origin rpy="${pi/2} ${pi} ${pi}"
+					xyz="${-fr08h101_width/2} ${-fr08h101_depth/2} ${fr08h101_offset}" />
+				<geometry>
+					<mesh filename="package://dyret_description/meshes/FR08-H101.STL"
+						scale="0.001 0.001 0.001"/>
+				</geometry>
+			</visual>
+
+			<collision>
+				<origin rpy="0 ${pi} 0" xyz="0 0 ${-fr08h101_height/2 + fr08h101_offset}" />
+				<geometry>
+					<box size="${fr08h101_width} ${fr08h101_depth} ${fr08h101_height - fr08h101_offset}" />
+				</geometry>
+			</collision>
+
+			<xacro:box_inertia_inv mass="0.018" width="${fr08h101_width}"
+				length="${fr08h101_depth}" height="${fr08h101_height}"	/>
+		</link>
+	</xacro:macro>
+
+	<!-- Use the following macros when building models: -->
+	<xacro:macro name="mx106t_fr08h101" params="name">
+		<xacro:mx106t name="${name}_servo" />
+		<xacro:fr08h101 name="${name}_bracket" />
+		<joint name="${name}" type="revolute">
+			<parent link="${name}_bracket" />
+			<child link="${name}_servo" />
+			<origin xyz="0 0 0" />
+			<limit
+				lower="-1.9" upper="1.9"
+				effort="10.0" velocity="5.76" />
+			<dynamics friction="0.1" damping="0.0952" />
+		</joint>
+	</xacro:macro>
+
+	<xacro:macro name="mx106t_fr08h101_inv" params="name">
+		<xacro:mx106t_inv name="${name}_servo" />
+		<xacro:fr08h101_inv name="${name}_bracket" />
+		<joint name="${name}" type="revolute">
+			<parent link="${name}_servo" />
+			<child link="${name}_bracket" />
+			<origin xyz="0.002 0 0.0145" rpy="0 0 ${pi/2}" />
+			<limit
+				lower="-1.9" upper="1.9"
+				effort="10.0" velocity="5.76" />
+			<dynamics friction="0.1" damping="0.0952" />
+		</joint>
+	</xacro:macro>
+</robot>

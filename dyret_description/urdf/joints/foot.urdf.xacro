@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find dyret_description)/urdf/inertias.urdf.xacro" />
+
+	<xacro:macro name="foot" params="name">
+		<link name="${name}_foot_cyl">
+			<visual>
+				<geometry>
+					<cylinder radius="0.014" length="0.0355" />
+				</geometry>
+			</visual>
+
+			<collision>
+				<geometry>
+					<cylinder radius="0.014" length="0.0355" />
+				</geometry>
+			</collision>
+
+			<xacro:cylinder_inertia mass="0.007" height="0.0355"
+				radius="0.014"/>
+		</link>
+		<link name="${name}_foot_sph">
+			<visual>
+				<geometry>
+					<sphere radius="0.0142" />
+				</geometry>
+			</visual>
+
+			<collision>
+				<geometry>
+					<sphere radius="0.0142" />
+				</geometry>
+			</collision>
+
+			<xacro:box_inertia mass="0.018" height="0.0142"
+				width="0.0142" length="0.0142" />
+		</link>
+		<joint name="${name}_foot_fixed" type="fixed">
+			<parent link="${name}_foot_cyl" />
+			<child link="${name}_foot_sph" />
+			<origin xyz="0 0 ${-0.0355/2 + 0.00195}" />
+		</joint>
+	</xacro:macro>
+</robot>

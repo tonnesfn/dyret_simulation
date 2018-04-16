@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="dyret" xmlns:xacro="http:/ros.org/wiki/xacro">
+<robot name="dyret" xmlns:xacro="http://ros.org/wiki/xacro">
 	<!-- Arguments that can be passed to this URDF file: -->
 	<xacro:arg name="imu_enabled" default="false" />
 	<xacro:arg name="contact_enabled" default="false" />
