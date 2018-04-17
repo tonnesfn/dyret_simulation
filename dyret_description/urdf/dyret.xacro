@@ -11,5 +11,9 @@
 	<!-- Create Gazebo interface for Dyret -->
 	<gazebo>
 		<self_collide>true</self_collide>
+		<plugin name="controller" filename="libdyret_gazebo_plugin.so">
+			<updateRate>60</updateRate>
+			<pid>48 0 0</pid>
+		</plugin>
 	</gazebo>
 </robot>
