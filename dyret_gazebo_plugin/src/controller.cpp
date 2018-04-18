@@ -102,29 +102,40 @@ namespace dyret {
 		}
 
 		// Update PID controller for all joints
-		ctrl->SetPositionPID("fl_joint1", mx64Pid);
-		ctrl->SetPositionPID("fr_joint1", mx64Pid);
-		ctrl->SetPositionPID("bl_joint1", mx64Pid);
-		ctrl->SetPositionPID("br_joint1", mx64Pid);
+		ctrl->SetPositionPID("dyret::fl_joint1", mx64Pid);
+		ctrl->SetPositionPID("dyret::fr_joint1", mx64Pid);
+		ctrl->SetPositionPID("dyret::bl_joint1", mx64Pid);
+		ctrl->SetPositionPID("dyret::br_joint1", mx64Pid);
 
-		ctrl->SetPositionPID("fl_joint2", mx106Pid);
-		ctrl->SetPositionPID("fl_joint3", mx106Pid);
-		ctrl->SetPositionPID("fr_joint2", mx106Pid);
-		ctrl->SetPositionPID("fr_joint3", mx106Pid);
-		ctrl->SetPositionPID("bl_joint2", mx106Pid);
-		ctrl->SetPositionPID("bl_joint3", mx106Pid);
-		ctrl->SetPositionPID("br_joint2", mx106Pid);
-		ctrl->SetPositionPID("br_joint3", mx106Pid);
+		ctrl->SetPositionPID("dyret::fl_joint2", mx106Pid);
+		ctrl->SetPositionPID("dyret::fl_joint3", mx106Pid);
+		ctrl->SetPositionPID("dyret::fr_joint2", mx106Pid);
+		ctrl->SetPositionPID("dyret::fr_joint3", mx106Pid);
+		ctrl->SetPositionPID("dyret::bl_joint2", mx106Pid);
+		ctrl->SetPositionPID("dyret::bl_joint3", mx106Pid);
+		ctrl->SetPositionPID("dyret::br_joint2", mx106Pid);
+		ctrl->SetPositionPID("dyret::br_joint3", mx106Pid);
 
-		ctrl->SetPositionPID("fl_ext1", extShortPid);
-		ctrl->SetPositionPID("fr_ext1", extShortPid);
-		ctrl->SetPositionPID("bl_ext1", extShortPid);
-		ctrl->SetPositionPID("br_ext1", extShortPid);
+		ctrl->SetPositionPID("dyret::fl_ext1", extShortPid);
+		ctrl->SetPositionPID("dyret::fr_ext1", extShortPid);
+		ctrl->SetPositionPID("dyret::bl_ext1", extShortPid);
+		ctrl->SetPositionPID("dyret::br_ext1", extShortPid);
 
-		ctrl->SetPositionPID("fl_ext2", extLongPid);
-		ctrl->SetPositionPID("fr_ext2", extLongPid);
-		ctrl->SetPositionPID("bl_ext2", extLongPid);
-		ctrl->SetPositionPID("br_ext2", extLongPid);
+		ctrl->SetPositionPID("dyret::fl_ext2", extLongPid);
+		ctrl->SetPositionPID("dyret::fr_ext2", extLongPid);
+		ctrl->SetPositionPID("dyret::bl_ext2", extLongPid);
+		ctrl->SetPositionPID("dyret::br_ext2", extLongPid);
+		// Set initial set-point so that robot doesn't fall
+		for(const auto& name : JOINT_NAMES) {
+			if(!ctrl->SetPositionTarget(name, 0.0)) {
+				ROS_WARN_STREAM("Could not set default position for joint " << name);
+			}
+		}
+		for(const auto& name : EXT_NAMES) {
+			if(!ctrl->SetPositionTarget(name, 0.0)){
+				ROS_WARN_STREAM("Could not set default position for joint " << name);
+			}
+		}
 		return true;
 	}
 
@@ -175,11 +186,13 @@ namespace dyret {
 		std::lock_guard<std::mutex> guard(mutex);
 		for(auto joint : JOINT_NAMES) {
 			ctrl->SetJointPosition(joint, 0.0);
+			ctrl->SetPositionTarget(joint, 0.0);
 		}
 		// If user desires we reset the extension joints as well
 		if(req.data) {
 			for(auto ext : EXT_NAMES) {
 				ctrl->SetJointPosition(ext, 0.0);
+				ctrl->SetPositionTarget(ext, 0.0);
 			}
 		}
 		resp.success = true;
@@ -243,26 +256,36 @@ namespace dyret {
 		// Set position target for revolute joints
 		if(pose->revolute.size() == 12) {
 			for(int i = 0; i < 12; ++i) {
-				ctrl->SetPositionTarget(JOINT_NAMES[i], pose->revolute[i]);
+				if(!ctrl->SetPositionTarget(JOINT_NAMES[i], pose->revolute[i])) {
+					ROS_WARN_STREAM("Could not set position '" <<
+							pose->revolute[i] << "' for joint: " <<
+							JOINT_NAMES[i]);
+				}
 			}
 		} else {
 			ROS_WARN("Unknown number of revolute joints, expected 12 was: %d",
 					pose->revolute.size());
 		}
 		// Set position targets for prismatic joints
+		// NOTE: prismatic joints move to negative values due to URDF definition
+		// to enable same message as real-world we negate here:
 		if(pose->prismatic.size() == 2) {
-			ctrl->SetPositionTarget("dyret::fl_ext1", pose->prismatic[0]);
-			ctrl->SetPositionTarget("dyret::fr_ext1", pose->prismatic[0]);
-			ctrl->SetPositionTarget("dyret::bl_ext1", pose->prismatic[0]);
-			ctrl->SetPositionTarget("dyret::br_ext1", pose->prismatic[0]);
+			ctrl->SetPositionTarget("dyret::fl_ext1", -pose->prismatic[0]);
+			ctrl->SetPositionTarget("dyret::fr_ext1", -pose->prismatic[0]);
+			ctrl->SetPositionTarget("dyret::bl_ext1", -pose->prismatic[0]);
+			ctrl->SetPositionTarget("dyret::br_ext1", -pose->prismatic[0]);
 
-			ctrl->SetPositionTarget("dyret::fl_ext2", pose->prismatic[1]);
-			ctrl->SetPositionTarget("dyret::fr_ext2", pose->prismatic[1]);
-			ctrl->SetPositionTarget("dyret::bl_ext2", pose->prismatic[1]);
-			ctrl->SetPositionTarget("dyret::br_ext2", pose->prismatic[1]);
+			ctrl->SetPositionTarget("dyret::fl_ext2", -pose->prismatic[1]);
+			ctrl->SetPositionTarget("dyret::fr_ext2", -pose->prismatic[1]);
+			ctrl->SetPositionTarget("dyret::bl_ext2", -pose->prismatic[1]);
+			ctrl->SetPositionTarget("dyret::br_ext2", -pose->prismatic[1]);
 		} else if (pose->prismatic.size() == 8) {
 			for(int i = 0; i < 8; ++i) {
-				ctrl->SetPositionTarget(EXT_NAMES[i], pose->prismatic[i]);
+				if(!ctrl->SetPositionTarget(EXT_NAMES[i], -pose->prismatic[i])) {
+					ROS_WARN_STREAM("Could not set prismatic joint to '" <<
+							-pose->prismatic[i] << "', joint: " <<
+							EXT_NAMES[i]);
+				}
 			}
 		} else {
 			ROS_WARN("Unknown number of prismatic joints, expected 2 or 8 was: %d",
@@ -284,26 +307,31 @@ namespace dyret {
 		}
 		// We wish to publish, but don't want to block Gazebo on ROS admin
 		if(mutex.try_lock()) {
-			auto joints = ctrl->GetJoints();
+			auto joints     = ctrl->GetJoints();
+			auto set_points = ctrl->GetPositions();
 			// Create message to publish
 			dyret_common::ServoStateArrayPtr state(new dyret_common::ServoStateArray);
 			state->header.stamp = ros::Time::now();
 			for(int i = 0; i < 12; ++i) {
 				dyret_common::ServoState st;
-				auto joint  = joints[JOINT_NAMES[i]];
-				st.position = joint->Position(0);
-				st.velocity = joint->GetVelocity(0);
-				st.current  = joint->GetForce(0);
+				auto joint     = joints[JOINT_NAMES[i]];
+				auto set_point = set_points[JOINT_NAMES[i]];
+				st.position  = joint->Position(0);
+				st.velocity  = joint->GetVelocity(0);
+				st.current   = joint->GetForce(0);
+				st.set_point = set_point;
 				state->revolute[i] = st;
 			}
 			for(int i = 0; i < 8; ++i) {
 				dyret_common::ServoState st;
-				auto joint  = joints[EXT_NAMES[i]];
+				auto joint     = joints[EXT_NAMES[i]];
+				auto set_point = set_points[EXT_NAMES[i]];
 				// NOTE: The prismatic joints move from 0 -> negative 0.X
 				// we multiply by -1 to give same output as real robot
-				st.position = std::abs(joint->Position(0));
-				st.velocity = joint->GetVelocity(0) * -1.0;
-				st.current  = joint->GetForce(0) * -1.0;
+				st.position  = std::abs(joint->Position(0));
+				st.velocity  = joint->GetVelocity(0) * -1.0;
+				st.current   = joint->GetForce(0) * -1.0;
+				st.set_point = std::abs(set_point);
 				state->prismatic[i] = st;
 			}
 			state_pub.publish(state);
