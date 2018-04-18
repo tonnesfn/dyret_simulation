@@ -41,6 +41,8 @@ namespace dyret {
 			bool InitROS();
 			// Reset joint targets
 			bool Reset(const std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& resp);
+			// Internal method used to set joints to default values
+			void Default(bool reset_prismatic = true);
 			// Configure one or more servos
 			bool Configure(const dyret_common::ConfigureServos::Request& req,
 					dyret_common::ConfigureServos::Response& resp);

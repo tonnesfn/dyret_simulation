@@ -44,20 +44,18 @@ namespace dyret {
 			ROS_FATAL("Model does not contain all expected joints!");
 			return;
 		}
-		if(!LoadParameters()) {
-			ROS_FATAL("Could not load parameters");
-			return;
-		}
 		if(!InitROS()) {
 			ROS_FATAL("Could not initiate ROS subsystem");
+			return;
+		}
+		if(!LoadParameters()) {
+			ROS_FATAL("Could not load parameters");
 			return;
 		}
 		// This ensures that our "UpdateJoints" method is called after each
 		// simulation tick
 		conn = gazebo::event::Events::ConnectWorldUpdateBegin(
 				std::bind(&GazeboDyretController::UpdateJoints, this));
-		// Start ROS asynchronous handling
-		spin->start();
 		ROS_INFO("Dyret Gazebo Controller loaded");
 	}
 
@@ -126,16 +124,8 @@ namespace dyret {
 		ctrl->SetPositionPID("dyret::bl_ext2", extLongPid);
 		ctrl->SetPositionPID("dyret::br_ext2", extLongPid);
 		// Set initial set-point so that robot doesn't fall
-		for(const auto& name : JOINT_NAMES) {
-			if(!ctrl->SetPositionTarget(name, 0.0)) {
-				ROS_WARN_STREAM("Could not set default position for joint " << name);
-			}
-		}
-		for(const auto& name : EXT_NAMES) {
-			if(!ctrl->SetPositionTarget(name, 0.0)){
-				ROS_WARN_STREAM("Could not set default position for joint " << name);
-			}
-		}
+		Default(true);
+		ROS_DEBUG("LoadParameters finished");
 		return true;
 	}
 
@@ -147,6 +137,7 @@ namespace dyret {
 		// Create asynchronous spinner with custom callback queue
 		// To minimize contention and resource usage set 1 thread:
 		spin = std::make_unique<ros::AsyncSpinner>(1, &queue);
+		spin->start();
 		// Advertise reset service
 		auto reset_opts = ros::AdvertiseServiceOptions::create<std_srvs::SetBool>(
 				"/" + this->model->GetName() + "/reset",
@@ -178,22 +169,34 @@ namespace dyret {
 			ROS_ERROR("Could not create configure service");
 			return false;
 		}
+		ROS_DEBUG("InitROS finished");
 		return true;
 	}
 
-	bool GazeboDyretController::Reset(const std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& resp) {
-		// NOTE: If method could affect 'UpdateJoints' must take mutex!
-		std::lock_guard<std::mutex> guard(mutex);
-		for(auto joint : JOINT_NAMES) {
-			ctrl->SetJointPosition(joint, 0.0);
-			ctrl->SetPositionTarget(joint, 0.0);
+	void GazeboDyretController::Default(bool reset_prismatic) {
+		for(const auto& joint : JOINT_NAMES) {
+			double position = 0.0;
+			node->getParam(joint.substr(7), position);
+			ctrl->SetJointPosition(joint, position);
+			ctrl->SetPositionTarget(joint, position);
 		}
 		// If user desires we reset the extension joints as well
-		if(req.data) {
-			for(auto ext : EXT_NAMES) {
-				ctrl->SetJointPosition(ext, 0.0);
-				ctrl->SetPositionTarget(ext, 0.0);
+		if(reset_prismatic) {
+			for(const auto& ext : EXT_NAMES) {
+				double position = 0.0;
+				node->getParam(ext.substr(7), position);
+				ctrl->SetJointPosition(ext, position);
+				ctrl->SetPositionTarget(ext, position);
 			}
+		}
+	}
+
+	bool GazeboDyretController::Reset(const std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& resp) {
+		{
+			// NOTE: If method could affect 'UpdateJoints' must take mutex!
+			std::lock_guard<std::mutex> guard(mutex);
+			// Reset joints
+			Default(req.data);
 		}
 		resp.success = true;
 		return true;

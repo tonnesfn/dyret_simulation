@@ -1,10 +1,11 @@
 <!-- Launch an empty Gazebo world and spawn Dyret -->
 <launch>
-	<arg name="world" default="worlds/empty.world" doc="Gazebo world file" />
-	<arg name="imu_enabled" default="true" />
 	<arg name="contact_enabled" default="false" />
-	<arg name="paused" default="false" doc="Start Gazebo paused" />
 	<arg name="gui" default="true" doc="Start GUI for Gazebo" />
+	<arg name="imu_enabled" default="true" />
+	<arg name="paused" default="false" doc="Start Gazebo paused" />
+	<arg name="posed" default="true" doc="Should initial spawn be posed?" />
+	<arg name="world" default="worlds/empty.world" doc="Gazebo world file" />
 
 	<!-- Start Gazebo -->
 	<include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -17,5 +18,6 @@
 	<include file="$(find dyret_gazebo)/launch/spawn_dyret.launch">
 		<arg name="imu_enabled" value="$(arg imu_enabled)" />
 		<arg name="contact_enabled" value="$(arg contact_enabled)" />
+		<arg name="posed" value="$(arg posed)" />
 	</include>
 </launch>

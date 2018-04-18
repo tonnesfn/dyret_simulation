@@ -1,0 +1,15 @@
+dyret:
+        fl_joint1: 0.35
+        fr_joint1: -0.35
+        bl_joint1: 0.35
+        br_joint1: -0.35
+
+        fl_joint2: 1.047
+        fr_joint2: 1.047
+        bl_joint2: -1.047
+        br_joint2: -1.047
+
+        fl_joint3: -1.6
+        fr_joint3: -1.6
+        bl_joint3: 1.6
+        br_joint3: 1.6
