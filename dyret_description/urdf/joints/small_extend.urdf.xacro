@@ -24,7 +24,7 @@
 					<box size="${small_ext_width} ${small_ext_depth} ${small_ext_height}" />
 				</geometry>
 			</collision>
-			<xacro:box_inertia mass="0.02" width="${small_ext_width}"
+			<xacro:box_inertia mass="0.04" width="${small_ext_width}"
 				length="${small_ext_depth}" height="${small_ext_height}"
 				r="${pi/2}" />
 		</link>
@@ -44,7 +44,7 @@
 					<box size="${small_ext2_width} ${small_ext2_depth} ${small_ext2_height}" />
 				</geometry>
 			</collision>
-			<xacro:box_inertia_inv mass="0.04" width="${small_ext2_width}"
+			<xacro:box_inertia_inv mass="0.02" width="${small_ext2_width}"
 				length="${small_ext2_depth}" height="${small_ext2_height}"
 				r="${pi/2}" />
 		</link>
