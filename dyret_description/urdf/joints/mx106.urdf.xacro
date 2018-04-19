@@ -125,12 +125,14 @@
 		<joint name="${name}" type="revolute">
 			<parent link="${name}_bracket" />
 			<child link="${name}_servo" />
-			<origin xyz="0 0 0" />
 			<limit
 				lower="-1.9" upper="1.9"
 				effort="10.0" velocity="5.76" />
 			<dynamics friction="0.1" damping="0.0952" />
 		</joint>
+		<gazebo reference="${name}">
+			<implicitSpringDamper>1</implicitSpringDamper>
+		</gazebo>
 	</xacro:macro>
 
 	<xacro:macro name="mx106t_fr08h101_inv" params="name">
@@ -145,5 +147,8 @@
 				effort="10.0" velocity="5.76" />
 			<dynamics friction="0.1" damping="0.0952" />
 		</joint>
+		<gazebo reference="${name}">
+			<implicitSpringDamper>1</implicitSpringDamper>
+		</gazebo>
 	</xacro:macro>
 </robot>

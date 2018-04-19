@@ -24,7 +24,7 @@
 					<box size="${body_width} ${body_depth} ${body_height}" />
 				</geometry>
 			</collision>
-			<xacro:box_inertia mass="0.58" width="${body_width}"
+			<xacro:box_inertia mass="0.2" width="${body_width}"
 				length="${body_depth}" height="${body_height}"
 				r="${pi/2}" />
 		</link>
@@ -48,7 +48,7 @@
 					<box size="${ac_width} ${ac_depth} ${ac_height}" />
 				</geometry>
 			</collision>
-			<xacro:box_inertia mass="0.28" width="${ac_width}"
+			<xacro:box_inertia mass="0.12" width="${ac_width}"
 				length="${ac_depth}" height="${ac_height}"
 				r="${pi/2}" />
 		</link>

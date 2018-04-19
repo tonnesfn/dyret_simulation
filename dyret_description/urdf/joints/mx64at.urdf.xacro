@@ -80,5 +80,8 @@
 				effort="6.0" velocity="6.597" />
 			<dynamics friction="0.1" damping="0.0952" />
 		</joint>
+		<gazebo reference="${name}">
+			<implicitSpringDamper>1</implicitSpringDamper>
+		</gazebo>
 	</xacro:macro>
 </robot>
