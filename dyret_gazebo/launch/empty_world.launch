@@ -1,10 +1,16 @@
 <!-- Launch an empty Gazebo world and spawn Dyret -->
 <launch>
+	<!-- Arguments for dyret -->
 	<arg name="contact_enabled" default="false" />
-	<arg name="gui" default="true" doc="Start GUI for Gazebo" />
 	<arg name="imu_enabled" default="true" />
-	<arg name="paused" default="false" doc="Start Gazebo paused" />
+	<arg name="pose" default="$(find dyret_gazebo)/cfg/default_pose.yaml"
+		doc="YAML configuration laying out default pose" />
 	<arg name="posed" default="true" doc="Should initial spawn be posed?" />
+	<arg name="spawn_height" default="0.4" doc="Height of dyret when spawned" />
+
+	<!-- Arguments for Gazebo -->
+	<arg name="paused" default="false" doc="Start Gazebo paused" />
+	<arg name="gui" default="true" doc="Start GUI for Gazebo" />
 	<arg name="world" default="worlds/empty.world" doc="Gazebo world file" />
 
 	<!-- Start Gazebo -->
@@ -16,8 +22,10 @@
 
 	<!-- Spawn Dyret within world -->
 	<include file="$(find dyret_gazebo)/launch/spawn_dyret.launch">
-		<arg name="imu_enabled" value="$(arg imu_enabled)" />
 		<arg name="contact_enabled" value="$(arg contact_enabled)" />
+		<arg name="imu_enabled" value="$(arg imu_enabled)" />
+		<arg name="pose" value="$(arg pose)" />
 		<arg name="posed" value="$(arg posed)" />
+		<arg name="spawn_height" value="$(arg spawn_height)" />
 	</include>
 </launch>
