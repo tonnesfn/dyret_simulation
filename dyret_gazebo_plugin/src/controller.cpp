@@ -123,6 +123,7 @@ namespace dyret {
 		ctrl->SetPositionPID("dyret::fr_ext2", extLongPid);
 		ctrl->SetPositionPID("dyret::bl_ext2", extLongPid);
 		ctrl->SetPositionPID("dyret::br_ext2", extLongPid);
+
 		// Set initial set-point so that robot doesn't fall
 		Default(true);
 		ROS_DEBUG("LoadParameters finished");
@@ -265,6 +266,9 @@ namespace dyret {
 							JOINT_NAMES[i]);
 				}
 			}
+		} else if (pose->revolute.empty()) {
+			// Do nothing by design, this arm is just to prevent
+			// emitting warnings when revolute vector is empty
 		} else {
 			ROS_WARN("Unknown number of revolute joints, expected 12 was: %d",
 					pose->revolute.size());
@@ -290,6 +294,9 @@ namespace dyret {
 							EXT_NAMES[i]);
 				}
 			}
+		} else if (pose->prismatic.empty()) {
+			// Do nothing by design, this arm is just to prevent
+			// emitting warnings when prismatic vector is empty
 		} else {
 			ROS_WARN("Unknown number of prismatic joints, expected 2 or 8 was: %d",
 					pose->prismatic.size());
