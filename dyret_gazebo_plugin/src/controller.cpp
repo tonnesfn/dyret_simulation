@@ -3,6 +3,7 @@
 #include <cmath>
 #include <dyret_common/ServoState.h>
 #include <dyret_common/ServoStateArray.h>
+#include <dyret_common/joints.h>
 #include <functional>
 #include <gazebo/gazebo.hh>
 #include <ros/advertise_options.h>
@@ -286,22 +287,18 @@ namespace dyret {
 		// NOTE: prismatic joints move to negative values due to URDF definition
 		// to enable same message as real-world we negate here:
 		if(pose->prismatic.size() == 2) {
-			ctrl->SetPositionTarget("dyret::fl_ext1", -pose->prismatic[0]);
-			ctrl->SetPositionTarget("dyret::fr_ext1", -pose->prismatic[0]);
-			ctrl->SetPositionTarget("dyret::bl_ext1", -pose->prismatic[0]);
-			ctrl->SetPositionTarget("dyret::br_ext1", -pose->prismatic[0]);
+			ctrl->SetPositionTarget("dyret::fl_ext1", -pose->prismatic[0] / 1000.0);
+			ctrl->SetPositionTarget("dyret::fr_ext1", -pose->prismatic[0] / 1000.0);
+			ctrl->SetPositionTarget("dyret::bl_ext1", -pose->prismatic[0] / 1000.0);
+			ctrl->SetPositionTarget("dyret::br_ext1", -pose->prismatic[0] / 1000.0);
 
-			ctrl->SetPositionTarget("dyret::fl_ext2", -pose->prismatic[1]);
-			ctrl->SetPositionTarget("dyret::fr_ext2", -pose->prismatic[1]);
-			ctrl->SetPositionTarget("dyret::bl_ext2", -pose->prismatic[1]);
-			ctrl->SetPositionTarget("dyret::br_ext2", -pose->prismatic[1]);
+			ctrl->SetPositionTarget("dyret::fl_ext2", -pose->prismatic[1] / 1000.0);
+			ctrl->SetPositionTarget("dyret::fr_ext2", -pose->prismatic[1] / 1000.0);
+			ctrl->SetPositionTarget("dyret::bl_ext2", -pose->prismatic[1] / 1000.0);
+			ctrl->SetPositionTarget("dyret::br_ext2", -pose->prismatic[1] / 1000.0);
 		} else if (pose->prismatic.size() == 8) {
 			for(int i = 0; i < 8; ++i) {
-				if(!ctrl->SetPositionTarget(EXT_NAMES[i], -pose->prismatic[i])) {
-					ROS_WARN_STREAM("Could not set prismatic joint to '" <<
-							-pose->prismatic[i] << "', joint: " <<
-							EXT_NAMES[i]);
-				}
+				ctrl->SetPositionTarget(EXT_NAMES[i], -pose->prismatic[i] / 1000.0);
 			}
 		} else if (pose->prismatic.empty()) {
 			// Do nothing by design, this arm is just to prevent
@@ -347,10 +344,10 @@ namespace dyret {
 				auto set_point = set_points[EXT_NAMES[i]];
 				// NOTE: The prismatic joints move from 0 -> negative 0.X
 				// we multiply by -1 to give same output as real robot
-				st.position  = std::abs(joint->Position(0));
+				st.position  = std::abs(joint->Position(0) * 1000.0);
 				st.velocity  = joint->GetVelocity(0) * -1.0;
 				st.current   = joint->GetForce(0) * -1.0;
-				st.set_point = std::abs(set_point);
+				st.set_point = std::abs(set_point * 1000.0);
 				state->prismatic[i] = st;
 			}
 			state_pub.publish(state);

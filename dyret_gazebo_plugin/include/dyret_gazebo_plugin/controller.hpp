@@ -14,18 +14,6 @@
 #include <std_srvs/SetBool.h>
 
 namespace dyret {
-	static const std::string JOINT_NAMES[] = {
-		"dyret::fl_joint1", "dyret::fl_joint2", "dyret::fl_joint3",
-		"dyret::fr_joint1", "dyret::fr_joint2", "dyret::fr_joint3",
-		"dyret::bl_joint1", "dyret::bl_joint2", "dyret::bl_joint3",
-		"dyret::br_joint1", "dyret::br_joint2", "dyret::br_joint3"};
-
-	static const std::string EXT_NAMES[] = {
-		"dyret::fl_ext1", "dyret::fl_ext2",
-		"dyret::fr_ext1", "dyret::fr_ext2",
-		"dyret::bl_ext1", "dyret::bl_ext2",
-		"dyret::br_ext1", "dyret::br_ext2"};
-
 	class GazeboDyretController: public gazebo::ModelPlugin {
 		public:
 			GazeboDyretController() {}
