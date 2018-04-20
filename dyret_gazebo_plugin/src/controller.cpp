@@ -56,6 +56,8 @@ namespace dyret {
 		// simulation tick
 		conn = gazebo::event::Events::ConnectWorldUpdateBegin(
 				std::bind(&GazeboDyretController::UpdateJoints, this));
+		// Start ROS handling once configuration is done
+		spin->start();
 		ROS_INFO("Dyret Gazebo Controller loaded");
 	}
 
@@ -138,7 +140,6 @@ namespace dyret {
 		// Create asynchronous spinner with custom callback queue
 		// To minimize contention and resource usage set 1 thread:
 		spin = std::make_unique<ros::AsyncSpinner>(1, &queue);
-		spin->start();
 		// Advertise reset service
 		auto reset_opts = ros::AdvertiseServiceOptions::create<std_srvs::SetBool>(
 				"/" + this->model->GetName() + "/reset",
@@ -170,6 +171,14 @@ namespace dyret {
 			ROS_ERROR("Could not create configure service");
 			return false;
 		}
+		// Create subscription to Pose messages
+		auto pose_opts = ros::SubscribeOptions::create<dyret_common::Pose>(
+				"/" + this->model->GetName() + "/dynCommands",
+				5,
+				std::bind(&GazeboDyretController::Pose, this,
+					std::placeholders::_1),
+				ros::VoidPtr(), &queue);
+		pose_sub = node->subscribe(pose_opts);
 		ROS_DEBUG("InitROS finished");
 		return true;
 	}

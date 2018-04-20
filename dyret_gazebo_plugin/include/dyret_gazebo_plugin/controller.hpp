@@ -72,6 +72,8 @@ namespace dyret {
 			ros::ServiceServer config_service;
 			// Publisher for Servo states
 			ros::Publisher state_pub;
+			// Subscription for pose messages
+			ros::Subscriber pose_sub;
 			// Ensure that asynchronous callbacks are not interrupted by
 			// callback from Gazebo
 			std::mutex mutex;
