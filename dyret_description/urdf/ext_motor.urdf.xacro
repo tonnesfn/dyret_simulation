@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find dyret_description)/urdf/inertias.urdf.xacro" />
+
+	<xacro:property name="ext_motor_width" value="0.05" />
+	<xacro:property name="ext_motor_depth" value="0.04" />
+	<xacro:property name="ext_motor_height" value="0.105" />
+	<!-- Weight without chain: 172g, with chain 185g -->
+	<xacro:property name="ext_motor_weight" value="0.185" />
+
+	<!-- `rot` should be either 1 or -1 signifying no rotation or 180 degree rotation -->
+	<xacro:macro name="ext_motor_upper" params="name rot:=1">
+		<link name="${name}">
+			<visual>
+				<origin rpy="0 0 ${pi/2 * rot}"
+					xyz="${(ext_motor_width/2 + 0.006) * rot}
+					${(-ext_motor_depth/2 + 0.0035) * rot} 0.02" />
+				<geometry>
+					<mesh filename="package://dyret_description/meshes/EXT_MOTOR_UPPER.STL"
+						scale="0.001 0.001 0.001"/>
+				</geometry>
+			</visual>
+
+			<collision>
+				<origin xyz="0 0 ${ext_motor_height/2}" rpy="0 0 ${pi/2 - (pi/2 * rot)}"/>
+				<geometry>
+					<box size="${ext_motor_width} ${ext_motor_depth} ${ext_motor_height}" />
+				</geometry>
+			</collision>
+
+			<xacro:box_inertia mass="${ext_motor_weight}" width="${ext_motor_width}"
+				length="${ext_motor_depth}" height="${ext_motor_height}"
+				r="${pi/2}" y="${pi/2 - (pi/2 * rot)}" />
+		</link>
+	</xacro:macro>
+
+	<xacro:macro name="ext_motor_lower" params="name rot:=1">
+		<link name="${name}">
+			<visual>
+				<origin rpy="0 0 ${pi/2 * rot}"
+					xyz="${(ext_motor_width/2 + 0.006) * rot}
+					${(-ext_motor_depth/2 + 0.013) * rot} 0.013" />
+				<geometry>
+					<mesh filename="package://dyret_description/meshes/EXT_MOTOR_LOWER.STL"
+						scale="0.001 0.001 0.001"/>
+				</geometry>
+			</visual>
+
+			<collision>
+				<origin xyz="0 0 ${ext_motor_height/2}" rpy="0 0 ${pi/2 - (pi/2 * rot)}"/>
+				<geometry>
+					<box size="${ext_motor_width} ${ext_motor_depth} ${ext_motor_height}" />
+				</geometry>
+			</collision>
+
+			<xacro:box_inertia mass="${ext_motor_weight}" width="${ext_motor_width}"
+				length="${ext_motor_depth}" height="${ext_motor_height}"
+				r="${pi/2}" y="${pi/2 - (pi/2 * rot)}" />
+		</link>
+	</xacro:macro>
+</robot>

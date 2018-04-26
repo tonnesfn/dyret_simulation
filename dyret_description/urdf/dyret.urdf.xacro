@@ -16,7 +16,7 @@
 				${-mx64at_height}" />
 		</joint>
 
-		<xacro:leg name="fr" />
+		<xacro:leg name="fr" rot="-1" />
 		<joint name="fr_body_fixed" type="fixed">
 			<parent link="main_body_chassis" />
 			<child link="fr_joint1_servo" />
@@ -34,7 +34,7 @@
 				${-mx64at_height}" />
 		</joint>
 
-		<xacro:leg name="br" />
+		<xacro:leg name="br" rot="-1" />
 		<joint name="br_body_fixed" type="fixed">
 			<parent link="main_body_chassis" />
 			<child link="br_joint1_servo" />

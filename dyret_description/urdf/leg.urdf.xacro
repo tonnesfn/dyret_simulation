@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find dyret_description)/urdf/ext_motor.urdf.xacro" />
+	<xacro:include filename="$(find dyret_description)/urdf/joints/foot.urdf.xacro" />
+	<xacro:include filename="$(find dyret_description)/urdf/joints/large_extend.urdf.xacro" />
 	<xacro:include filename="$(find dyret_description)/urdf/joints/mx106.urdf.xacro" />
 	<xacro:include filename="$(find dyret_description)/urdf/joints/mx64at.urdf.xacro" />
 	<xacro:include filename="$(find dyret_description)/urdf/joints/small_extend.urdf.xacro" />
-	<xacro:include filename="$(find dyret_description)/urdf/joints/large_extend.urdf.xacro" />
-	<xacro:include filename="$(find dyret_description)/urdf/joints/foot.urdf.xacro" />
 
 	<!-- Macro for one leg of Dyret -->
-	<xacro:macro name="leg" params="name">
+	<xacro:macro name="leg" params="name rot:=1">
 		<xacro:mx64at_fr05h101 name="${name}_joint1"/>
 		<xacro:mx106t_fr08h101 name="${name}_joint2"/>
 		<joint name="${name}_joint1_2_fixed" type="fixed">
@@ -17,7 +18,14 @@
 				rpy="0 0 ${pi/2}" />
 		</joint>
 
-		<xacro:small_extender name="${name}_ext1" />
+		<xacro:ext_motor_upper name="${name}_ext_upper" rot="${rot}" />
+		<joint name="${name}_joint2_motor" type="fixed">
+			<parent link="${name}_joint2_servo" />
+			<child link="${name}_ext_upper" />
+			<origin xyz="${(-mx106t_width + 0.004) * rot} 0 ${-mx106t_height - 0.0395}" />
+		</joint>
+
+		<xacro:small_extender name="${name}_ext1" rot="${rot}" />
 		<joint name="${name}_joint2_ext1_fixed" type="fixed">
 			<parent link="${name}_joint2_servo" />
 			<child link="${name}_ext1_inner" />
@@ -32,7 +40,14 @@
 				rpy="0 0 ${-pi/2}" />
 		</joint>
 
-		<xacro:large_extender name="${name}_ext2" />
+		<xacro:ext_motor_lower name="${name}_ext_lower" rot="${rot}" />
+		<joint name="${name}_joint3_motor" type="fixed">
+			<parent link="${name}_joint3_bracket" />
+			<child link="${name}_ext_lower" />
+			<origin xyz="${(-fr08h101_width + 0.008) * rot} ${0.001 * rot} ${-fr08h101_height * 2 - 0.003}" />
+		</joint>
+
+		<xacro:large_extender name="${name}_ext2" rot="${rot}" />
 		<joint name="${name}_joint3_ext2_fixed" type="fixed">
 			<parent link="${name}_joint3_bracket" />
 			<child link="${name}_ext2_inner" />

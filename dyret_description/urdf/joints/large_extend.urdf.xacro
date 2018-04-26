@@ -30,12 +30,16 @@
 		</link>
 	</xacro:macro>
 
-	<xacro:macro name="large_ext2" params="name">
+	<xacro:macro name="large_ext2" params="name rot:=1">
 		<link name="${name}">
 			<visual>
-				<origin xyz="0 0 ${-large_ext2_height/2}" />
+				<origin rpy="0 0 ${pi/2 * rot}"
+					xyz="${(large_ext2_width * 2 - 0.009) * rot}
+					${(-large_ext2_depth * 2 - 0.002) * rot}
+					${-large_ext2_height * 1.5 + 0.005}" />
 				<geometry>
-					<box size="${large_ext2_width} ${large_ext2_depth} ${large_ext2_height}" />
+					<mesh filename="package://dyret_description/meshes/EXT2_OUTER.STL"
+						scale="0.001 0.001 0.001"/>
 				</geometry>
 			</visual>
 			<collision>
@@ -50,9 +54,9 @@
 		</link>
 	</xacro:macro>
 
-	<xacro:macro name="large_extender" params="name">
+	<xacro:macro name="large_extender" params="name rot:=1">
 		<xacro:large_ext name="${name}_inner" />
-		<xacro:large_ext2 name="${name}_outer" />
+		<xacro:large_ext2 name="${name}_outer" rot="${rot}" />
 		<joint name="${name}" type="prismatic">
 			<parent link="${name}_inner" />
 			<child link="${name}_outer" />
@@ -61,7 +65,7 @@
 			<limit
 				lower="-0.100" upper="0.0"
 				effort="100.0" velocity="0.00045" />
-			<dynamics damping="200" friction="80" />
+			<!--<dynamics damping="1.0" friction="80" />-->
 		</joint>
 		<gazebo reference="${name}">
 			<implicitSpringDamper>1</implicitSpringDamper>
