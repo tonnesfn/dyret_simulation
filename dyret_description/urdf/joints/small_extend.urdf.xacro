@@ -8,7 +8,7 @@
 
 	<xacro:property name="small_ext2_width" value="0.0436" />
 	<xacro:property name="small_ext2_depth" value="0.0212" />
-	<xacro:property name="small_ext2_height" value="0.0792" />
+	<xacro:property name="small_ext2_height" value="0.06" />
 
 	<xacro:macro name="small_ext" params="name">
 		<link name="${name}">
