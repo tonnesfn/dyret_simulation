@@ -13,7 +13,7 @@
 		<self_collide>true</self_collide>
 		<plugin name="controller" filename="libdyret_gazebo_plugin.so">
 			<updateRate>50</updateRate>
-			<pid>10000.0 0.0 100.0</pid>
+			<pid>20000.0 0.0 100.0</pid>
 			<pid type="mx64">20 0.5 1.0</pid>
 			<pid type="mx106">20 0.5 1.0</pid>
 		</plugin>
