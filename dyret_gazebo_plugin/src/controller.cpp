@@ -345,8 +345,8 @@ namespace dyret {
 				// NOTE: The prismatic joints move from 0 -> negative 0.X
 				// we multiply by -1 to give same output as real robot
 				st.position  = std::abs(joint->Position(0) * 1000.0);
-				st.velocity  = joint->GetVelocity(0) * -1.0;
-				st.current   = joint->GetForce(0) * -1.0;
+				st.velocity  = -joint->GetVelocity(0);
+				st.current   = -joint->GetForce(0);
 				st.set_point = std::abs(set_point * 1000.0);
 				state->prismatic[i] = st;
 			}

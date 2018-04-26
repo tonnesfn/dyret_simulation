@@ -24,7 +24,7 @@
 					<box size="${small_ext_width} ${small_ext_depth} ${small_ext_height}" />
 				</geometry>
 			</collision>
-			<xacro:box_inertia mass="0.04" width="${small_ext_width}"
+			<xacro:box_inertia mass="0.078" width="${small_ext_width}"
 				length="${small_ext_depth}" height="${small_ext_height}"
 				r="${pi/2}" />
 		</link>
