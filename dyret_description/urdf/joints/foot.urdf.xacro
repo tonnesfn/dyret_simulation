@@ -43,6 +43,7 @@
 				<mu2>1.5</mu2>
 				<maxVel>1.0</maxVel>
 				<minDepth>0.0</minDepth>
+				<material>Gazebo/Black</material>
 				<sensor name="${name}_bumper" type="contact">
 					<contact>
 						<collision>${name}_ext2_outer_fixed_joint_lump__${name}_foot_sph_collision_2</collision>
