@@ -280,7 +280,7 @@ namespace dyret {
 			// Do nothing by design, this arm is just to prevent
 			// emitting warnings when revolute vector is empty
 		} else {
-			ROS_WARN("Unknown number of revolute joints, expected 12 was: %d",
+			ROS_WARN("Unknown number of revolute joints, expected 12 was: %lu",
 					pose->revolute.size());
 		}
 		// Set position targets for prismatic joints
@@ -304,7 +304,7 @@ namespace dyret {
 			// Do nothing by design, this arm is just to prevent
 			// emitting warnings when prismatic vector is empty
 		} else {
-			ROS_WARN("Unknown number of prismatic joints, expected 2 or 8 was: %d",
+			ROS_WARN("Unknown number of prismatic joints, expected 2 or 8 was: %lu",
 					pose->prismatic.size());
 		}
 	}
@@ -332,7 +332,11 @@ namespace dyret {
 				dyret_common::ServoState st;
 				auto joint     = joints[JOINT_NAMES[i]];
 				auto set_point = set_points[JOINT_NAMES[i]];
+#if GAZEBO_MAJOR_VERSION >= 8
 				st.position  = joint->Position(0);
+#else
+				st.position  = joint->GetAngle(0).Radian();
+#endif
 				st.velocity  = joint->GetVelocity(0);
 				st.current   = joint->GetForce(0);
 				st.set_point = set_point;
@@ -344,7 +348,12 @@ namespace dyret {
 				auto set_point = set_points[EXT_NAMES[i]];
 				// NOTE: The prismatic joints move from 0 -> negative 0.X
 				// we multiply by -1 to give same output as real robot
-				st.position  = std::abs(joint->Position(0) * 1000.0);
+#if GAZEBO_MAJOR_VERSION >= 8
+				const double position = joint->Position(0);
+#else
+				const double position = joint->GetAngle(0).Radian();
+#endif
+				st.position  = std::abs(position * 1000.0);
 				st.velocity  = -joint->GetVelocity(0);
 				st.current   = -joint->GetForce(0);
 				st.set_point = std::abs(set_point * 1000.0);
