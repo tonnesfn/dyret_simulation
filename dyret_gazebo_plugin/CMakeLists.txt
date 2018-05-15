@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 project(dyret_gazebo_plugin CXX)
 
 set(CMAKE_CXX_STANDARD 14)
+# Set warning flags to get prettiest and good C++
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror -Wfloat-equal -Wno-unused -Wold-style-cast")
 
 find_package(catkin REQUIRED COMPONENTS
 	dyret_common
@@ -16,8 +18,12 @@ catkin_package(
 	DEPENDS gazebo
 	)
 
+# Include our code separate
+include_directories(include)
+
+# Include CATKIN packages as SYSTEM include so that warnings are not activated
 include_directories(
-	include
+	SYSTEM
 	${catkin_INCLUDE_DIRS}
 	)
 
