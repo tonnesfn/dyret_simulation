@@ -9,54 +9,54 @@
 
 	<!-- Macro for one leg of Dyret -->
 	<xacro:macro name="leg" params="name rot:=1">
-		<xacro:mx64at_fr05h101 name="${name}_joint1"/>
-		<xacro:mx106t_fr08h101 name="${name}_joint2"/>
-		<joint name="${name}_joint1_2_fixed" type="fixed">
-			<parent link="${name}_joint1_bracket" />
-			<child link="${name}_joint2_bracket" />
+		<xacro:mx64at_fr05h101 name="${name}_joint0"/>
+		<xacro:mx106t_fr08h101 name="${name}_joint1"/>
+		<joint name="${name}_joint0_1_fixed" type="fixed">
+			<parent link="${name}_joint0_bracket" />
+			<child link="${name}_joint1_bracket" />
 			<origin xyz="0 0 ${-mx64at_height/2 - fr05h101_height - 0.001}"
 				rpy="0 0 ${pi/2}" />
 		</joint>
 
 		<xacro:ext_motor_upper name="${name}_ext_upper" rot="${rot}" />
-		<joint name="${name}_joint2_motor" type="fixed">
-			<parent link="${name}_joint2_servo" />
+		<joint name="${name}_joint1_motor" type="fixed">
+			<parent link="${name}_joint1_servo" />
 			<child link="${name}_ext_upper" />
 			<origin xyz="${(-mx106t_width + 0.004) * rot} 0 ${-mx106t_height - 0.0395}" />
 		</joint>
 
-		<xacro:small_extender name="${name}_ext1" rot="${rot}" />
-		<joint name="${name}_joint2_ext1_fixed" type="fixed">
-			<parent link="${name}_joint2_servo" />
-			<child link="${name}_ext1_inner" />
+		<xacro:small_extender name="${name}_ext0" rot="${rot}" />
+		<joint name="${name}_joint1_ext0_fixed" type="fixed">
+			<parent link="${name}_joint1_servo" />
+			<child link="${name}_ext0_inner" />
 			<origin xyz="0 0 ${-mx106t_height/2 - fr08h101_height - small_ext_height/2}" />
 		</joint>
 
-		<xacro:mx106t_fr08h101_inv name="${name}_joint3" />
-		<joint name="${name}_ext1_joint3_fixed" type="fixed">
-			<parent link="${name}_ext1_outer" />
-			<child link="${name}_joint3_servo" />
+		<xacro:mx106t_fr08h101_inv name="${name}_joint2" />
+		<joint name="${name}_ext0_joint2_fixed" type="fixed">
+			<parent link="${name}_ext0_outer" />
+			<child link="${name}_joint2_servo" />
 			<origin xyz="0 0.002 ${-small_ext_height/2 - small_ext2_height - mx106t_height/2}"
 				rpy="0 0 ${-pi/2}" />
 		</joint>
 
 		<xacro:ext_motor_lower name="${name}_ext_lower" rot="${rot}" />
-		<joint name="${name}_joint3_motor" type="fixed">
-			<parent link="${name}_joint3_bracket" />
+		<joint name="${name}_joint2_motor" type="fixed">
+			<parent link="${name}_joint2_bracket" />
 			<child link="${name}_ext_lower" />
 			<origin xyz="${(-fr08h101_width + 0.008) * rot} ${0.001 * rot} ${-fr08h101_height * 2 - 0.003}" />
 		</joint>
 
-		<xacro:large_extender name="${name}_ext2" rot="${rot}" />
-		<joint name="${name}_joint3_ext2_fixed" type="fixed">
-			<parent link="${name}_joint3_bracket" />
-			<child link="${name}_ext2_inner" />
+		<xacro:large_extender name="${name}_ext1" rot="${rot}" />
+		<joint name="${name}_joint2_ext1_fixed" type="fixed">
+			<parent link="${name}_joint2_bracket" />
+			<child link="${name}_ext1_inner" />
 			<origin xyz="0 0 ${-fr08h101_height - large_ext_height + 0.0145/2}" />
 		</joint>
 
 		<xacro:foot name="${name}" />
-		<joint name="${name}_ext2_foot_fixed" type="fixed">
-			<parent link="${name}_ext2_outer" />
+		<joint name="${name}_ext1_foot_fixed" type="fixed">
+			<parent link="${name}_ext1_outer" />
 			<child link="${name}_foot_cyl" />
 			<origin xyz="0 0 ${-large_ext2_height - 0.0355/2}" />
 		</joint>

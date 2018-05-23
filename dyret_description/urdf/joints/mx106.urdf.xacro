@@ -126,12 +126,16 @@
 			<parent link="${name}_bracket" />
 			<child link="${name}_servo" />
 			<limit
-				lower="-1.9" upper="1.9"
+				lower="-1.57" upper="1.57"
 				effort="10.0" velocity="5.76" />
 			<dynamics friction="0.1" damping="0.0952" />
 		</joint>
 		<gazebo reference="${name}">
 			<implicitSpringDamper>1</implicitSpringDamper>
+			<erp>0.1</erp>
+			<stopKd value="100000000.0" />
+			<stopKp value="100000000.0" />
+			<fudgeFactor value="0.5" />
 		</gazebo>
 	</xacro:macro>
 
@@ -143,12 +147,16 @@
 			<child link="${name}_bracket" />
 			<origin xyz="0.002 0 0.0145" rpy="0 0 ${pi/2}" />
 			<limit
-				lower="-1.9" upper="1.9"
+				lower="-1.57" upper="1.57"
 				effort="10.0" velocity="5.76" />
 			<dynamics friction="0.1" damping="0.0952" />
 		</joint>
 		<gazebo reference="${name}">
 			<implicitSpringDamper>1</implicitSpringDamper>
+			<erp>0.1</erp>
+			<stopKd value="100000000.0" />
+			<stopKp value="100000000.0" />
+			<fudgeFactor value="0.5" />
 		</gazebo>
 	</xacro:macro>
 </robot>

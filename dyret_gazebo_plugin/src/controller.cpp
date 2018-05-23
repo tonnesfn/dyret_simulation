@@ -103,29 +103,29 @@ namespace dyret {
 		}
 
 		// Update PID controller for all joints
-		ctrl->SetPositionPID("dyret::fl_joint1", mx64Pid);
-		ctrl->SetPositionPID("dyret::fr_joint1", mx64Pid);
-		ctrl->SetPositionPID("dyret::bl_joint1", mx64Pid);
-		ctrl->SetPositionPID("dyret::br_joint1", mx64Pid);
+		ctrl->SetPositionPID("dyret::fl_joint0", mx64Pid);
+		ctrl->SetPositionPID("dyret::fr_joint0", mx64Pid);
+		ctrl->SetPositionPID("dyret::bl_joint0", mx64Pid);
+		ctrl->SetPositionPID("dyret::br_joint0", mx64Pid);
 
+		ctrl->SetPositionPID("dyret::fl_joint1", mx106Pid);
 		ctrl->SetPositionPID("dyret::fl_joint2", mx106Pid);
-		ctrl->SetPositionPID("dyret::fl_joint3", mx106Pid);
+		ctrl->SetPositionPID("dyret::fr_joint1", mx106Pid);
 		ctrl->SetPositionPID("dyret::fr_joint2", mx106Pid);
-		ctrl->SetPositionPID("dyret::fr_joint3", mx106Pid);
+		ctrl->SetPositionPID("dyret::bl_joint1", mx106Pid);
 		ctrl->SetPositionPID("dyret::bl_joint2", mx106Pid);
-		ctrl->SetPositionPID("dyret::bl_joint3", mx106Pid);
+		ctrl->SetPositionPID("dyret::br_joint1", mx106Pid);
 		ctrl->SetPositionPID("dyret::br_joint2", mx106Pid);
-		ctrl->SetPositionPID("dyret::br_joint3", mx106Pid);
 
-		ctrl->SetPositionPID("dyret::fl_ext1", extShortPid);
-		ctrl->SetPositionPID("dyret::fr_ext1", extShortPid);
-		ctrl->SetPositionPID("dyret::bl_ext1", extShortPid);
-		ctrl->SetPositionPID("dyret::br_ext1", extShortPid);
+		ctrl->SetPositionPID("dyret::fl_ext0", extShortPid);
+		ctrl->SetPositionPID("dyret::fr_ext0", extShortPid);
+		ctrl->SetPositionPID("dyret::bl_ext0", extShortPid);
+		ctrl->SetPositionPID("dyret::br_ext0", extShortPid);
 
-		ctrl->SetPositionPID("dyret::fl_ext2", extLongPid);
-		ctrl->SetPositionPID("dyret::fr_ext2", extLongPid);
-		ctrl->SetPositionPID("dyret::bl_ext2", extLongPid);
-		ctrl->SetPositionPID("dyret::br_ext2", extLongPid);
+		ctrl->SetPositionPID("dyret::fl_ext1", extLongPid);
+		ctrl->SetPositionPID("dyret::fr_ext1", extLongPid);
+		ctrl->SetPositionPID("dyret::bl_ext1", extLongPid);
+		ctrl->SetPositionPID("dyret::br_ext1", extLongPid);
 
 		// Set initial set-point so that robot doesn't fall
 		Default(true);

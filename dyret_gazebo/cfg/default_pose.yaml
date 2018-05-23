@@ -1,15 +1,15 @@
 dyret:
-        fl_joint1: 0.18
-        fr_joint1: -0.18
-        bl_joint1: 0.18
-        br_joint1: -0.18
+        fl_joint0: 0.18
+        fr_joint0: -0.18
+        bl_joint0: 0.18
+        br_joint0: -0.18
 
-        fl_joint2: 0.71
-        fr_joint2: 0.71
-        bl_joint2: -0.71
-        br_joint2: -0.71
+        fl_joint1: 0.71
+        fr_joint1: 0.71
+        bl_joint1: -0.71
+        br_joint1: -0.71
 
-        fl_joint3: -1.2
-        fr_joint3: -1.2
-        bl_joint3: 1.2
-        br_joint3: 1.2
+        fl_joint2: -1.2
+        fr_joint2: -1.2
+        bl_joint2: 1.2
+        br_joint2: 1.2

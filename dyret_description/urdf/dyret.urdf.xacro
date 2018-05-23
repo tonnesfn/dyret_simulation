@@ -10,7 +10,7 @@
 		<xacro:leg name="fl" />
 		<joint name="fl_body_fixed" type="fixed">
 			<parent link="main_body_chassis" />
-			<child link="fl_joint1_servo" />
+			<child link="fl_joint0_servo" />
 			<origin xyz="${-body_width / 2 + mx64at_width/2 - 0.007}
 				${body_depth / 2 - mx64at_depth / 2 + 0.0065}
 				${-mx64at_height}" />
@@ -19,7 +19,7 @@
 		<xacro:leg name="fr" rot="-1" />
 		<joint name="fr_body_fixed" type="fixed">
 			<parent link="main_body_chassis" />
-			<child link="fr_joint1_servo" />
+			<child link="fr_joint0_servo" />
 			<origin xyz="${body_width / 2 - mx64at_width/2 + 0.012}
 				${body_depth / 2 - mx64at_depth / 2 + 0.005}
 				${-mx64at_height}" />
@@ -28,7 +28,7 @@
 		<xacro:leg name="bl" />
 		<joint name="bl_body_fixed" type="fixed">
 			<parent link="main_body_chassis" />
-			<child link="bl_joint1_servo" />
+			<child link="bl_joint0_servo" />
 			<origin xyz="${-body_width / 2 + mx64at_width/2 - 0.01}
 				${-body_depth / 2 + mx64at_depth / 2 - 0.0035}
 				${-mx64at_height}" />
@@ -37,7 +37,7 @@
 		<xacro:leg name="br" rot="-1" />
 		<joint name="br_body_fixed" type="fixed">
 			<parent link="main_body_chassis" />
-			<child link="br_joint1_servo" />
+			<child link="br_joint0_servo" />
 			<origin xyz="${body_width / 2 - mx64at_width/2 + 0.009}
 				${-body_depth / 2 + mx64at_depth / 2 - 0.005}
 				${-mx64at_height}" />
