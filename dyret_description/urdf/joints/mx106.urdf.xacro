@@ -132,7 +132,6 @@
 		</joint>
 		<gazebo reference="${name}">
 			<implicitSpringDamper>1</implicitSpringDamper>
-			<erp>0.1</erp>
 			<stopKd value="100000000.0" />
 			<stopKp value="100000000.0" />
 			<fudgeFactor value="0.5" />
@@ -153,7 +152,6 @@
 		</joint>
 		<gazebo reference="${name}">
 			<implicitSpringDamper>1</implicitSpringDamper>
-			<erp>0.1</erp>
 			<stopKd value="100000000.0" />
 			<stopKp value="100000000.0" />
 			<fudgeFactor value="0.5" />
