@@ -12,9 +12,7 @@ some difficulties in building these packages.
 
 ### Required packages
 Like all `dyret` packages this requires
-[`dyret_common`](https://github.uio.no/robin/dyret_common). Currently it also
-needs branch [`next`](https://github.uio.no/robin/dyret_common/tree/next), but
-that will change once `dyret_common` is updated.
+[`dyret_common`](https://github.uio.no/robin/dyret_common).
 
 ## Package description
 ### `dyret_description`
