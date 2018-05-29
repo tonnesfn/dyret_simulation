@@ -4,7 +4,7 @@
 #include <mutex>
 #include <string>
 
-#include <dyret_common/ConfigureServos.h>
+#include <dyret_common/Configure.h>
 #include <dyret_common/Pose.h>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/physics/physics.hh>
@@ -32,8 +32,8 @@ namespace dyret {
 			// Internal method used to set joints to default values
 			void Default(bool reset_prismatic = true);
 			// Configure one or more servos
-			bool Configure(const dyret_common::ConfigureServos::Request& req,
-					dyret_common::ConfigureServos::Response& resp);
+			bool Configure(const dyret_common::Configure::Request& req,
+					dyret_common::Configure::Response& resp);
 			// Set position of all joints
 			void Pose(const dyret_common::Pose::ConstPtr& pose);
 

@@ -1,8 +1,9 @@
 #include "dyret_gazebo_plugin/controller.hpp"
 
 #include <cmath>
-#include <dyret_common/ServoState.h>
-#include <dyret_common/ServoStateArray.h>
+#include <dyret_common/PrismaticConfig.h>
+#include <dyret_common/RevoluteConfig.h>
+#include <dyret_common/State.h>
 #include <dyret_common/joints.h>
 #include <functional>
 #include <gazebo/gazebo.hh>
@@ -143,43 +144,47 @@ namespace dyret {
 		spin = std::make_unique<ros::AsyncSpinner>(1, &queue);
 		// Advertise reset service
 		auto reset_opts = ros::AdvertiseServiceOptions::create<std_srvs::SetBool>(
-				"/" + this->model->GetName() + "/reset",
+				"/" + this->model->GetName() + "/simulation/reset",
 				std::bind(&GazeboDyretController::Reset, this,
 					std::placeholders::_1, std::placeholders::_2),
 				ros::VoidPtr(), &queue);
 		reset_service = node->advertiseService(reset_opts);
 		if(reset_service == nullptr) {
-			ROS_ERROR("Could not create reset service");
+			ROS_ERROR("Could not create 'reset' service");
 			return false;
 		}
 		// Create state publisher
-		auto state_opts = ros::AdvertiseOptions::create<dyret_common::ServoStateArray>(
-				"/" + this->model->GetName() + "/servoStates",
+		auto state_opts = ros::AdvertiseOptions::create<dyret_common::State>(
+				"/" + this->model->GetName() + "/state",
 				1, NULL, NULL, ros::VoidPtr(), &queue);
 		state_pub = node->advertise(state_opts);
 		if(state_pub == nullptr) {
-			ROS_ERROR("Could not create 'servoStates' publisher");
+			ROS_ERROR("Could not create 'state' publisher");
 			return false;
 		}
 		// Create configure service
-		auto config_opts = ros::AdvertiseServiceOptions::create<dyret_common::ConfigureServos>(
-				"/" + this->model->GetName() + "/configure",
+		auto config_opts = ros::AdvertiseServiceOptions::create<dyret_common::Configure>(
+				"/" + this->model->GetName() + "/configuration",
 				std::bind(&GazeboDyretController::Configure, this,
 					std::placeholders::_1, std::placeholders::_2),
 				ros::VoidPtr(), &queue);
 		config_service = node->advertiseService(config_opts);
 		if(config_service == nullptr) {
-			ROS_ERROR("Could not create configure service");
+			ROS_ERROR("Could not create 'configuration' service");
 			return false;
 		}
 		// Create subscription to Pose messages
 		auto pose_opts = ros::SubscribeOptions::create<dyret_common::Pose>(
-				"/" + this->model->GetName() + "/dynCommands",
+				"/" + this->model->GetName() + "/command",
 				5,
 				std::bind(&GazeboDyretController::Pose, this,
 					std::placeholders::_1),
 				ros::VoidPtr(), &queue);
 		pose_sub = node->subscribe(pose_opts);
+		if(pose_sub == nullptr) {
+			ROS_ERROR("Could not create 'command' subscription");
+			return false;
+		}
 		ROS_DEBUG("InitROS finished");
 		return true;
 	}
@@ -214,51 +219,95 @@ namespace dyret {
 	}
 
 	bool GazeboDyretController::Configure(
-			const dyret_common::ConfigureServos::Request& req,
-			dyret_common::ConfigureServos::Response& resp) {
+			const dyret_common::Configure::Request& req,
+			dyret_common::Configure::Response& resp) {
 		// NOTE: If method could affect 'UpdateJoints' must take mutex!
 		std::lock_guard<std::mutex> guard(mutex);
 		auto joints = ctrl->GetJoints();
-		for(const auto& cfg: req.configurations) {
-			if(cfg.id > 12) {
-				ROS_WARN("Unknown servo ID: %d", cfg.id);
-				continue;
+		const auto& conf = req.configuration;
+		{
+			// Configure revolute joints
+			const auto& cfg = conf.revolute;
+			std::vector<uint8_t> revolute_ids = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+			if(!cfg.ids.empty()) {
+				// If IDs are empty then configure all joints, if not
+				// use supplied IDs
+				revolute_ids = cfg.ids;
 			}
-			auto name = JOINT_NAMES[cfg.id];
-			auto joint = joints[name];
-			switch(cfg.type) {
-				case dyret_common::ServoConfig::TYPE_DISABLE_LOG:
-				case dyret_common::ServoConfig::TYPE_ENABLE_LOG:
-				case dyret_common::ServoConfig::TYPE_ENABLE_TORQUE:
-				case dyret_common::ServoConfig::TYPE_DISABLE_TORQUE:
-					ROS_WARN("Operation (%d) not supported in simulation", cfg.type);
-					break;
-				case dyret_common::ServoConfig::TYPE_SET_SPEED:
-					if(cfg.parameters.size() < 1) {
-						resp.status = dyret_common::ConfigureServos::Response::STATUS_PARAMETER;
-						resp.message = "Expected one parameter to set speed";
-						return true;
-					} else {
-						joint->SetVelocityLimit(0, cfg.parameters[0]);
-					}
-					break;
-				case dyret_common::ServoConfig::TYPE_SET_PID:
-					if(cfg.parameters.size() < 3) {
-						resp.status = dyret_common::ConfigureServos::Response::STATUS_PARAMETER;
-						resp.message = "Expected at least 3 parameter for PID";
-						return true;
-					} else {
-						gazebo::common::PID pid(
-								cfg.parameters[0],
-								cfg.parameters[1],
-								cfg.parameters[2]);
-						ctrl->SetPositionPID(name, pid);
-					}
-					break;
-				default:
-					ROS_WARN("Unknown configuration type: %d for ID: %d",
-							cfg.type, cfg.id);
-					break;
+			for(const auto& id : revolute_ids) {
+				if(id > 12) {
+					ROS_WARN("Unknown servo ID: %d", id);
+					continue;
+				}
+				auto name = JOINT_NAMES[id];
+				auto joint = joints[name];
+				switch(cfg.type) {
+					case dyret_common::RevoluteConfig::TYPE_ENABLE_TORQUE:
+					case dyret_common::RevoluteConfig::TYPE_DISABLE_TORQUE:
+						ROS_WARN("Operation (%d) not supported in simulation", cfg.type);
+						break;
+					case dyret_common::RevoluteConfig::TYPE_SET_SPEED:
+						if(cfg.parameters.size() != 1) {
+							resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
+							resp.message = "Expected one parameter to set speed";
+							return true;
+						} else {
+							joint->SetVelocityLimit(0, cfg.parameters[0]);
+						}
+						break;
+					case dyret_common::RevoluteConfig::TYPE_SET_PID:
+						if(cfg.parameters.size() < 3) {
+							resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
+							resp.message = "Expected at least 3 parameter for PID";
+							return true;
+						} else {
+							gazebo::common::PID pid(
+									cfg.parameters[0],
+									cfg.parameters[1],
+									cfg.parameters[2]);
+							ctrl->SetPositionPID(name, pid);
+						}
+						break;
+					default:
+						ROS_WARN("Unknown configuration type: %d", cfg.type);
+						break;
+				}
+			}
+		}
+		{
+			// Configure prismatic joints
+			const auto& cfg = conf.prismatic;
+			std::vector<uint8_t> prismatic_ids = {0, 1, 2, 3, 4, 5, 6, 7};
+			if(!cfg.ids.empty()) {
+				// If IDs are empty then configure all joints, if not
+				// use supplied IDs
+				prismatic_ids = cfg.ids;
+			}
+			for(const auto& id : prismatic_ids) {
+				if(id > 12) {
+					ROS_WARN("Unknown servo ID: %d", id);
+					continue;
+				}
+				auto name = JOINT_NAMES[id];
+				auto joint = joints[name];
+				switch(cfg.type) {
+					case dyret_common::PrismaticConfig::TYPE_SET_P:
+						if(cfg.parameters.size() < 1) {
+							resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
+							resp.message = "Expected at least 1 parameter for P";
+							return true;
+						} else {
+							gazebo::common::PID pid(
+									cfg.parameters[0],
+									0.0, 0.0);
+							ctrl->SetPositionPID(name, pid);
+						}
+						break;
+					default:
+						ROS_WARN("Unknown configuration type: %d",
+								cfg.type);
+						break;
+				}
 			}
 		}
 		return true;
@@ -326,24 +375,21 @@ namespace dyret {
 			auto joints     = ctrl->GetJoints();
 			auto set_points = ctrl->GetPositions();
 			// Create message to publish
-			dyret_common::ServoStateArrayPtr state(new dyret_common::ServoStateArray);
-			state->header.stamp = ros::Time::now();
+			dyret_common::State state;
+			state.header.stamp = ros::Time::now();
 			for(int i = 0; i < 12; ++i) {
-				dyret_common::ServoState st;
 				auto joint     = joints[JOINT_NAMES[i]];
 				auto set_point = set_points[JOINT_NAMES[i]];
 #if GAZEBO_MAJOR_VERSION >= 8
-				st.position  = joint->Position(0);
+				state.revolute[i].position  = joint->Position(0);
 #else
-				st.position  = joint->GetAngle(0).Radian();
+				state.revolute[i].position  = joint->GetAngle(0).Radian();
 #endif
-				st.velocity  = joint->GetVelocity(0);
-				st.current   = joint->GetForce(0);
-				st.set_point = set_point;
-				state->revolute[i] = st;
+				state.revolute[i].velocity  = joint->GetVelocity(0);
+				state.revolute[i].current   = joint->GetForce(0);
+				state.revolute[i].set_point = set_point;
 			}
 			for(int i = 0; i < 8; ++i) {
-				dyret_common::ServoState st;
 				auto joint     = joints[EXT_NAMES[i]];
 				auto set_point = set_points[EXT_NAMES[i]];
 				// NOTE: The prismatic joints move from 0 -> negative 0.X
@@ -353,11 +399,8 @@ namespace dyret {
 #else
 				const double position = joint->GetAngle(0).Radian();
 #endif
-				st.position  = std::abs(position * 1000.0);
-				st.velocity  = -joint->GetVelocity(0);
-				st.current   = -joint->GetForce(0);
-				st.set_point = std::abs(set_point * 1000.0);
-				state->prismatic[i] = st;
+				state.prismatic[i].position  = std::abs(position * 1000.0);
+				state.prismatic[i].set_point = std::abs(set_point * 1000.0);
 			}
 			state_pub.publish(state);
 			lastPublish = currentTime;
