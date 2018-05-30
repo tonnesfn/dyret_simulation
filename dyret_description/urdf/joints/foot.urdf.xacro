@@ -46,12 +46,12 @@
 				<material>Gazebo/Black</material>
 				<sensor name="${name}_bumper" type="contact">
 					<contact>
-						<collision>${name}_ext2_outer_fixed_joint_lump__${name}_foot_sph_collision_2</collision>
+						<collision>${name}_ext1_outer_fixed_joint_lump__${name}_foot_sph_collision_2</collision>
 					</contact>
 					<plugin name="${name}_gazebo_ros_bumper_controller"
 						filename="libgazebo_ros_bumper.so">
 						<robotNamespace>/dyret</robotNamespace>
-						<bumperTopicName>${name}_contact</bumperTopicName>
+						<bumperTopicName>sensor/contact/${name}</bumperTopicName>
 						<frameName>world</frameName>
 					</plugin>
 				</sensor>
