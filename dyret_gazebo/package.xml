@@ -9,5 +9,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roslaunch</build_depend>
   <exec_depend>dyret_description</exec_depend>
+  <exec_depend>dyret_gazebo_plugin</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
 </package>
