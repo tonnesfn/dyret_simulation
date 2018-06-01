@@ -228,16 +228,14 @@ namespace dyret {
 		{
 			// Configure revolute joints
 			const auto& cfg = conf.revolute;
-			std::vector<uint8_t> revolute_ids = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-			if(!cfg.ids.empty()) {
-				// If IDs are empty then configure all joints, if not
-				// use supplied IDs
-				revolute_ids = cfg.ids;
-			}
-			for(const auto& id : revolute_ids) {
+			for(size_t i = 0; i < cfg.ids.size(); ++i) {
+				const auto id = cfg.ids[i];
 				if(id > 12) {
-					ROS_WARN("Unknown servo ID: %d", id);
-					continue;
+					// There is an error in the message, return to user
+					ROS_WARN("Invalid Revolute ID (=%d) encountered", id);
+					resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
+					resp.message = "Invalid Revolute ID encountered";
+					return true;
 				}
 				auto name = JOINT_NAMES[id];
 				auto joint = joints[name];
@@ -247,24 +245,28 @@ namespace dyret {
 						ROS_WARN("Operation (%d) not supported in simulation", cfg.type);
 						break;
 					case dyret_common::RevoluteConfig::TYPE_SET_SPEED:
-						if(cfg.parameters.size() != 1) {
+						if(cfg.parameters.size() != cfg.ids.size() * 1) {
+							ROS_WARN("Expected one parameter for each ID (%zu) found %zu",
+									cfg.ids.size() * 1, cfg.parameters.size());
 							resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
-							resp.message = "Expected one parameter to set speed";
+							resp.message = "Expected one parameter for each ID to set speed";
 							return true;
 						} else {
-							joint->SetVelocityLimit(0, cfg.parameters[0]);
+							joint->SetVelocityLimit(0, cfg.parameters[i]);
 						}
 						break;
 					case dyret_common::RevoluteConfig::TYPE_SET_PID:
-						if(cfg.parameters.size() < 3) {
+						if(cfg.parameters.size() != cfg.ids.size() * 3) {
+							ROS_WARN("Expected three parameter for each ID (%zu) found %zu",
+									cfg.ids.size() * 3, cfg.parameters.size());
 							resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
-							resp.message = "Expected at least 3 parameter for PID";
+							resp.message = "Expected at least 3 parameter per ID to set PID";
 							return true;
 						} else {
 							gazebo::common::PID pid(
-									cfg.parameters[0],
-									cfg.parameters[1],
-									cfg.parameters[2]);
+									cfg.parameters[i + 0],
+									cfg.parameters[i + 1],
+									cfg.parameters[i + 2]);
 							ctrl->SetPositionPID(name, pid);
 						}
 						break;
@@ -277,28 +279,28 @@ namespace dyret {
 		{
 			// Configure prismatic joints
 			const auto& cfg = conf.prismatic;
-			std::vector<uint8_t> prismatic_ids = {0, 1, 2, 3, 4, 5, 6, 7};
-			if(!cfg.ids.empty()) {
-				// If IDs are empty then configure all joints, if not
-				// use supplied IDs
-				prismatic_ids = cfg.ids;
-			}
-			for(const auto& id : prismatic_ids) {
+			for(size_t i = 0; i < cfg.ids.size(); ++i) {
+				const auto id = cfg.ids[i];
 				if(id > 12) {
-					ROS_WARN("Unknown servo ID: %d", id);
-					continue;
+					// There is an error in the message, return to user
+					ROS_WARN("Invalid Prismatic ID (=%d) encountered", id);
+					resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
+					resp.message = "Invalid Prismatic ID encountered";
+					return true;
 				}
 				auto name = JOINT_NAMES[id];
 				auto joint = joints[name];
 				switch(cfg.type) {
 					case dyret_common::PrismaticConfig::TYPE_SET_P:
-						if(cfg.parameters.size() < 1) {
+						if(cfg.parameters.size() < cfg.ids.size() * 1) {
+							ROS_WARN("Expected one parameter for each ID (%zu) found %zu",
+									cfg.ids.size() * 1, cfg.parameters.size());
 							resp.status = dyret_common::Configure::Response::STATUS_PARAMETER;
-							resp.message = "Expected at least 1 parameter for P";
+							resp.message = "Expected at least one parameter per ID to set P";
 							return true;
 						} else {
 							gazebo::common::PID pid(
-									cfg.parameters[0],
+									cfg.parameters[id],
 									0.0, 0.0);
 							ctrl->SetPositionPID(name, pid);
 						}
