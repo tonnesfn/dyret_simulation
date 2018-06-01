@@ -7,6 +7,7 @@
 #include <dyret_common/joints.h>
 #include <functional>
 #include <gazebo/gazebo.hh>
+#include <geometry_msgs/PoseStamped.h>
 #include <ros/advertise_options.h>
 
 GZ_REGISTER_MODEL_PLUGIN(dyret::GazeboDyretController)
@@ -15,7 +16,8 @@ namespace dyret {
 
 	GazeboDyretController::~GazeboDyretController() {
 		// Clear connection to Gazebo
-		conn.reset();
+		state_conn.reset();
+		pose_conn.reset();
 		// Clear ROS callback queue
 		queue.clear();
 		queue.disable();
@@ -56,8 +58,10 @@ namespace dyret {
 		}
 		// This ensures that our "UpdateJoints" method is called after each
 		// simulation tick
-		conn = gazebo::event::Events::ConnectWorldUpdateBegin(
-				std::bind(&GazeboDyretController::UpdateJoints, this));
+		state_conn = gazebo::event::Events::ConnectWorldUpdateBegin(
+				std::bind(&GazeboDyretController::PublishState, this));
+		pose_conn = gazebo::event::Events::ConnectWorldUpdateBegin(
+				std::bind(&GazeboDyretController::PublishPose, this));
 		// Start ROS handling once configuration is done
 		spin->start();
 		ROS_INFO("Dyret Gazebo Controller loaded");
@@ -160,6 +164,15 @@ namespace dyret {
 		state_pub = node->advertise(state_opts);
 		if(state_pub == nullptr) {
 			ROS_ERROR("Could not create 'state' publisher");
+			return false;
+		}
+		// Create pose publisher
+		auto pose_out_opts = ros::AdvertiseOptions::create<geometry_msgs::PoseStamped>(
+				"/" + this->model->GetName() + "/sensor/pose",
+				1, NULL, NULL, ros::VoidPtr(), &queue);
+		pose_pub = node->advertise(pose_out_opts);
+		if(pose_pub == nullptr) {
+			ROS_ERROR("Could not create 'pose' publisher");
 			return false;
 		}
 		// Create configure service
@@ -360,7 +373,7 @@ namespace dyret {
 		}
 	}
 
-	void GazeboDyretController::UpdateJoints() {
+	void GazeboDyretController::PublishState() {
 		// If there are no subscribers we do not proceed
 		if(state_pub.getNumSubscribers() == 0) {
 			return;
@@ -406,6 +419,35 @@ namespace dyret {
 			}
 			state_pub.publish(state);
 			lastPublish = currentTime;
+			mutex.unlock();
+		}
+	}
+
+	void GazeboDyretController::PublishPose() {
+		// Do not publish unless there are subscribers
+		if(pose_pub.getNumSubscribers() == 0) {
+			return;
+		}
+		if(mutex.try_lock()) {
+			geometry_msgs::PoseStamped pose;
+			pose.header.stamp = ros::Time::now();
+#if GAZEBO_MAJOR_VERSION >= 8
+			auto model_pose = model->WorldPose();
+#else
+			auto model_pose = model->GetWorldPose().Ign();
+#endif
+			auto pos = model_pose.Pos();
+			auto rot = model_pose.Rot();
+			// Copy position
+			pose.pose.position.x = pos.X();
+			pose.pose.position.y = pos.Y();
+			pose.pose.position.z = pos.Z();
+			// Copy orientation
+			pose.pose.orientation.w = rot.W();
+			pose.pose.orientation.x = rot.X();
+			pose.pose.orientation.y = rot.Y();
+			pose.pose.orientation.z = rot.Z();
+			pose_pub.publish(pose);
 			mutex.unlock();
 		}
 	}

@@ -22,7 +22,8 @@ namespace dyret {
 			void Load(gazebo::physics::ModelPtr model_, sdf::ElementPtr sdf_) override;
 
 		protected:
-			void UpdateJoints();
+			void PublishPose();
+			void PublishState();
 			// Load shared parameters
 			bool LoadParameters();
 			// Initialize ROS subsystem
@@ -39,7 +40,8 @@ namespace dyret {
 
 		private:
 			// Pointer to connection event update from Gazebo
-			gazebo::event::ConnectionPtr conn;
+			gazebo::event::ConnectionPtr pose_conn;
+			gazebo::event::ConnectionPtr state_conn;
 			// Pointer to Dyret model
 			gazebo::physics::ModelPtr model;
 			// Pointer to joint controller
@@ -60,6 +62,7 @@ namespace dyret {
 			ros::ServiceServer config_service;
 			// Publisher for Servo states
 			ros::Publisher state_pub;
+			ros::Publisher pose_pub;
 			// Subscription for pose messages
 			ros::Subscriber pose_sub;
 			// Ensure that asynchronous callbacks are not interrupted by
