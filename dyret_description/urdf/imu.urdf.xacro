@@ -38,7 +38,7 @@
 						<gaussianNoise>0.01745</gaussianNoise>
 						<robotNamespace>/dyret</robotNamespace>
 						<rpyOffset>0 0 0</rpyOffset>
-						<topicName>sensor/imu/data</topicName>
+						<topicName>sensor/imu</topicName>
 						<updateRateHZ>100.0</updateRateHZ>
 						<xyzOffset>0 0 0</xyzOffset>
 					</plugin>

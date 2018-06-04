@@ -401,7 +401,10 @@ namespace dyret {
 				state.revolute[i].position  = joint->GetAngle(0).Radian();
 #endif
 				state.revolute[i].velocity  = joint->GetVelocity(0);
-				state.revolute[i].current   = joint->GetForce(0);
+				// Since current is always positive in real-world
+				// we transform force to be always positive to
+				// match up.
+				state.revolute[i].current   = std::abs(joint->GetForce(0));
 				state.revolute[i].set_point = set_point;
 			}
 			for(int i = 0; i < 8; ++i) {
