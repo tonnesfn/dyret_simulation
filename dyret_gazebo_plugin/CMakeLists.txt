@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(dyret_gazebo_plugin CXX)
 
+# This is allowed as of Melodic
 set(CMAKE_CXX_STANDARD 14)
 # Set warning flags to get prettiest and good C++
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror -Wfloat-equal -Wno-unused -Wold-style-cast")

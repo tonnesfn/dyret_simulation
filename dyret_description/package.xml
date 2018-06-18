@@ -4,7 +4,7 @@
   <version>0.1.0</version>
   <description>URDF and XACRO models of Dyret</description>
   <maintainer email="jorgehn@ifi.uio.no">Jørgen Nordmoen</maintainer>
-  <license>MIT</license>
+  <license>GPL-3.0-or-later</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roslaunch</build_depend>
