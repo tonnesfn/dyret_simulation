@@ -351,17 +351,26 @@ namespace dyret {
 		// NOTE: prismatic joints move to negative values due to URDF definition
 		// to enable same message as real-world we negate here:
 		if(pose->prismatic.size() == 2) {
+      ctrl->SetJointPosition("dyret::fl_ext0", -pose->prismatic[0] / 1000.0);
 			ctrl->SetPositionTarget("dyret::fl_ext0", -pose->prismatic[0] / 1000.0);
+      ctrl->SetJointPosition("dyret::fr_ext0", -pose->prismatic[0] / 1000.0);
 			ctrl->SetPositionTarget("dyret::fr_ext0", -pose->prismatic[0] / 1000.0);
+      ctrl->SetJointPosition("dyret::bl_ext0", -pose->prismatic[0] / 1000.0);
 			ctrl->SetPositionTarget("dyret::bl_ext0", -pose->prismatic[0] / 1000.0);
+      ctrl->SetJointPosition("dyret::br_ext0", -pose->prismatic[0] / 1000.0);
 			ctrl->SetPositionTarget("dyret::br_ext0", -pose->prismatic[0] / 1000.0);
 
+      ctrl->SetJointPosition("dyret::fl_ext1", -pose->prismatic[1] / 1000.0);
 			ctrl->SetPositionTarget("dyret::fl_ext1", -pose->prismatic[1] / 1000.0);
+      ctrl->SetJointPosition("dyret::fr_ext1", -pose->prismatic[1] / 1000.0);
 			ctrl->SetPositionTarget("dyret::fr_ext1", -pose->prismatic[1] / 1000.0);
+      ctrl->SetJointPosition("dyret::bl_ext1", -pose->prismatic[1] / 1000.0);
 			ctrl->SetPositionTarget("dyret::bl_ext1", -pose->prismatic[1] / 1000.0);
+      ctrl->SetJointPosition("dyret::br_ext1", -pose->prismatic[1] / 1000.0);
 			ctrl->SetPositionTarget("dyret::br_ext1", -pose->prismatic[1] / 1000.0);
 		} else if (pose->prismatic.size() == 8) {
 			for(int i = 0; i < 8; ++i) {
+        ctrl->SetJointPosition(EXT_NAMES[i], -pose->prismatic[i] / 1000.0); 
 				ctrl->SetPositionTarget(EXT_NAMES[i], -pose->prismatic[i] / 1000.0);
 			}
 		} else if (pose->prismatic.empty()) {
